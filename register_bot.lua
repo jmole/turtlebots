@@ -48,15 +48,15 @@ end
 -- Clean up bot table and bot storage
 -------------------------------------
 local function clean_bot_table()
-    for bot_key,bot_data in pairs( vbots.bot_info) do
+    for bot_key,bot_data in pairs( VBOTS.bot_info) do
         local meta = minetest.get_meta(bot_data.pos)
         local bot_name = meta:get_string("name")
         if bot_name=="" then
-            vbots.bot_info[bot_key] = nil
+            VBOTS.bot_info[bot_key] = nil
         end
     end
     --print("Cleaned")
-    --print(dump(vbots.bot_info))
+    --print(dump(VBOTS.bot_info))
 end
 
 -------------------------------------
@@ -116,100 +116,27 @@ local function position_bot(pos,newpos)
             if hold then
                 minetest.get_meta(newpos):from_table(hold)
             end
+            minetest.check_for_falling(newpos)
+            return true
         else
             minetest.sound_play("error",{pos = newpos, gain = 10})
-        end
-        minetest.check_for_falling(newpos)
-    else
-        minetest.sound_play("system-fault",{pos = newpos, gain = 10})
-    end
-end
-
-
-local function move_bot(pos,direction)
-    local meta = minetest.get_meta(pos)
-    local bot_owner = meta:get_string("owner")
-    local player = minetest.get_player_by_name(bot_owner)
-    -- print(bot_owner)
-    local ppos
-    if player then
-        ppos = player:get_pos()
-        -- print(dump(pos))
-        -- print(dump(ppos))
-    end
-    local node = minetest.get_node(pos)
-    local dir = minetest.facedir_to_dir(node.param2)
-    local newpos
-    if direction == "u" then
-        newpos = {x = pos.x, y = pos.y+1, z = pos.z}
-    elseif direction == "d" then
-        newpos = {x = pos.x, y = pos.y-1, z = pos.z}
-    elseif direction == "f" then
-        newpos = {x = pos.x-dir.x, y = pos.y, z = pos.z-dir.z}
-    elseif direction == "b" then
-        newpos = {x = pos.x+dir.x, y = pos.y, z = pos.z+dir.z}
-    end
-    if newpos then
-        position_bot(pos,newpos)
-    end
-    if ppos then
-        if math.abs(ppos.x-pos.x)<1.1 and
-                math.abs(ppos.z-pos.z)<1.1 and
-                math.abs(ppos.y-pos.y)<2 and
-                ppos.y>pos.y then
-            player:setpos({x=newpos.x, y=newpos.y+1.1, z=newpos.z })
-        end
-    end
-end
-
-local function bot_dig(pos,digy)
-    local meta = minetest.get_meta(pos)
-    local bot_owner = meta:get_string("owner")
-    local node = minetest.get_node(pos)
-    local dir = minetest.facedir_to_dir(node.param2)
-    local digpos
-    if digy == 0 then
-        digpos = {x = pos.x-dir.x, y = pos.y, z = pos.z-dir.z}
-    else
-        digpos = {x = pos.x, y = pos.y+digy, z = pos.z}
-    end
-    if not minetest.is_protected(digpos, bot_owner) then
-        local drop = minetest.get_node(digpos)		
-        local node_definition = minetest.registered_nodes[drop.name]
-        local drops = minetest.get_node_drops(drop.name)
-        if node_definition.groups.not_in_creative_inventory~=1 then
-            local inv=minetest.get_inventory({
-                                    type="node",
-                                    pos=pos
-                                })
-            for _, itemname in ipairs(drops) do
-                local leftover = inv:add_item("main", ItemStack(itemname))
-                if not leftover then
-                    minetest.sound_play("system-fault",{pos = newpos, gain = 10})
-                    vbots.bot_togglestate(pos,"off")
-                end
-            end
-            minetest.set_node(digpos,{name="air"})
-            --minetest.dig_node(digpos)
+            minetest.check_for_falling(newpos)
+            return false
         end
     else
         minetest.sound_play("system-fault",{pos = newpos, gain = 10})
+        return false
     end
 end
 
-local function bot_build(pos,buildy)
+local function bot_build(pos, buildpos)
     local meta = minetest.get_meta(pos)
     local inv = meta:get_inventory()
     local bot_owner = meta:get_string("owner")
     local node = minetest.get_node(pos)
     local dir = minetest.facedir_to_dir(node.param2)
     local withblock = meta:get("withblock")
-	local buildpos
-    if buildy == 0 then
-        buildpos = {x = pos.x+dir.x, y = pos.y, z = pos.z+dir.z}
-    else
-        buildpos = {x = pos.x, y = pos.y+buildy, z = pos.z}
-    end
+
     local buildnode = minetest.get_node(buildpos)
 
     if not minetest.is_protected(buildpos, bot_owner) and basically_empty(buildnode) then
@@ -241,10 +168,96 @@ local function bot_build(pos,buildy)
         minetest.sound_play("system-fault",{pos = pos, gain = 10})
     end
 end
+local function move_bot(pos,direction)
+    local meta = minetest.get_meta(pos)
+    local bot_owner = meta:get_string("owner")
+    local player = minetest.get_player_by_name(bot_owner)
+    -- print(bot_owner)
+    local ppos
+    if player then
+        ppos = player:get_pos()
+        -- print(dump(pos))
+        -- print(dump(ppos))
+    end
+    local node = minetest.get_node(pos)
+    local dir = minetest.facedir_to_dir(node.param2)
+    local newpos
+    if direction == "u" then
+        newpos = {x = pos.x, y = pos.y+1, z = pos.z}
+    elseif direction == "d" then
+        newpos = {x = pos.x, y = pos.y-1, z = pos.z}
+    elseif direction == "f" then
+        print("forwards")
+        newpos = {x = pos.x-dir.x, y = pos.y, z = pos.z-dir.z}
+    elseif direction == "b" then
+        print("backwards")
+        newpos = {x = pos.x+dir.x, y = pos.y, z = pos.z+dir.z}
+    elseif direction == "r" then
+        print("right")
+        newpos = {x = pos.x-dir.z, y = pos.y, z = pos.z-dir.x}
+    elseif direction == "l" then
+        print("left")
+        newpos = {x = pos.x+dir.z, y = pos.y, z = pos.z+dir.x}
+    end
+    if newpos then
+        if not string.find(minetest.get_node(newpos).name, "vbots") then
+            if not minetest.is_protected(newpos, bot_owner) then
+                minetest.set_node(newpos,{name="air"})
+            end
+        end
+        if (position_bot(pos,newpos)) then
+            bot_build(newpos,pos)
+        end
+    end
+    if ppos then
+        if math.abs(ppos.x-pos.x)<1.1 and
+                math.abs(ppos.z-pos.z)<1.1 and
+                math.abs(ppos.y-pos.y)<2 and
+                ppos.y>pos.y then
+            player:setpos({x=newpos.x, y=newpos.y+1.1, z=newpos.z })
+        end
+    end
+end
+
+local function bot_dig(pos,digy)
+    local meta = minetest.get_meta(pos)
+    local bot_owner = meta:get_string("owner")
+    local node = minetest.get_node(pos)
+    local dir = minetest.facedir_to_dir(node.param2)
+    local digpos
+    if digy == 0 then
+        digpos = {x = pos.x-dir.x, y = pos.y, z = pos.z-dir.z}
+    else
+        digpos = {x = pos.x, y = pos.y+digy, z = pos.z}
+    end
+    if not minetest.is_protected(digpos, bot_owner) then
+        local drop = minetest.get_node(digpos)
+        local node_definition = minetest.registered_nodes[drop.name]
+        local drops = minetest.get_node_drops(drop.name)
+        if node_definition.groups.not_in_creative_inventory~=1 then
+            local inv=minetest.get_inventory({
+                                    type="node",
+                                    pos=pos
+                                })
+            for _, itemname in ipairs(drops) do
+                local leftover = inv:add_item("main", ItemStack(itemname))
+                if not leftover then
+                    minetest.sound_play("system-fault",{pos = newpos, gain = 10})
+                    VBOTS.bot_togglestate(pos,"off")
+                end
+            end
+            minetest.set_node(digpos,{name="air"})
+            --minetest.dig_node(digpos)
+        end
+    else
+        minetest.sound_play("system-fault",{pos = newpos, gain = 10})
+    end
+end
 
 local function bot_parsecommand(pos,item)
     local meta = minetest.get_meta(pos)
     local bot_owner = meta:get_string("owner")
+    print(item)
     if item == "vbots:move_forward" then
         move_bot(pos,"f")
     elseif item == "vbots:move_backward" then
@@ -253,6 +266,10 @@ local function bot_parsecommand(pos,item)
         move_bot(pos,"u")
     elseif item == "vbots:move_down" then
         move_bot(pos,"d")
+    elseif item == "vbots:move_left" then
+        move_bot(pos,"l")
+    elseif item == "vbots:move_right" then
+        move_bot(pos,"r")
     elseif item == "vbots:move_home" then
         local newpos = minetest.deserialize(meta:get_string("home"))
         if newpos then
@@ -310,7 +327,7 @@ local function punch_bot(pos,player)
     if bot_owner == player:get_player_name() then
         local item = player:get_wielded_item():get_name()
         if item == "" then
-            vbots.bot_togglestate(pos)
+            VBOTS.bot_togglestate(pos)
         end
     end
 end
@@ -356,7 +373,7 @@ local function bot_handletimer(pos)
     meta:set_int("PC",PC)
     meta:set_int("PR",PR)
     meta:set_string("stack",stack)
-    if PC<56 then
+    if PC<VBOTS.INVENTORY_SIZE+2 then
         -- print("mainloop PR:"..meta:get_int("PR")..
         --   " PC:"..meta:get_int("PC")..
         --   " R:"..meta:get_int("repeat")..
@@ -369,7 +386,7 @@ local function bot_handletimer(pos)
             pull_state(pos)
             return true
         else
-            vbots.bot_togglestate(pos)
+            VBOTS.bot_togglestate(pos)
             return false
         end
     end
@@ -391,7 +408,7 @@ local function register_bot(node_name,node_desc,node_tiles,node_groups)
         --light_source = 14,
         on_blast = function() end,
         after_place_node = function(pos, placer, itemstack, pointed_thing)
-            vbots.bot_init(pos, placer)
+            VBOTS.bot_init(pos, placer)
             local facing = minetest.dir_to_facedir(placer:get_look_dir())
             facing = (facing+2)%4
             facebot(facing,pos)
@@ -405,8 +422,8 @@ local function register_bot(node_name,node_desc,node_tiles,node_groups)
                 return 0
             end
             if interact(clicker,pos) then
-                vbots.bot_restore(pos)
-                minetest.after(0, vbots.show_formspec, clicker, pos)
+                VBOTS.bot_restore(pos)
+                minetest.after(0, VBOTS.show_formspec, clicker, pos)
             end
         end,
         on_timer = function(pos, elapsed)
@@ -424,7 +441,7 @@ local function register_bot(node_name,node_desc,node_tiles,node_groups)
         on_destruct = function(pos)
             local meta = minetest.get_meta(pos)
             local bot_key = meta:get_string("key")
-            vbots.bot_info[bot_key] = nil
+            VBOTS.bot_info[bot_key] = nil
             clean_bot_table()
         end
     })

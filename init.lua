@@ -2,66 +2,79 @@
 -- (c)2019 Nigel Garnett.
 --
 -- see licence.txt
---
+--$
 
-vbots={}
-vbots.modpath = minetest.get_modpath("vbots")
-vbots.bot_info = {}
+VBOTS={}
+VBOTS.modpath = minetest.get_modpath("vbots")
+VBOTS.bot_info = {}
+
+VBOTS.INVENTORY_SIZE = 8
+
+minetest.create_detached_inventory("bot_commands", {
+    allow_move = function(inv, from_list, from_index, to_list, to_index, count, player2)
+        return 0
+    end,
+    allow_put = function(inv, w, index, stack, player2)
+        return 0
+    end,
+    allow_take = function(inv, listname, index, stack, player2)
+        local name = player2 and player2:get_player_name() or ""
+        if not minetest.is_creative_enabled(name) then
+            return 0
+        end
+        return -1
+    end,
+    on_move = function(inv, from_list, from_index, to_list, to_index, count, player2)
+    end,
+    on_take = function(inv, listname, index, stack, player2)
+        if stack and stack:get_count() > 0 then
+            minetest.log("action", player_name .. " takes " .. stack:get_name().. " from creative inventory")
+        end
+    end,
+}, player_name)
 
 local trashInv = minetest.create_detached_inventory(
-                    "bottrash",
+                    "bot_trash",
                     {
                        on_put = function(inv, toList, toIndex, stack, player)
                           inv:set_stack(toList, toIndex, ItemStack(nil))
                        end
                     })
 trashInv:set_size("main", 1)
-mod_storage = minetest.get_mod_storage()
+local mod_storage = minetest.get_mod_storage()
 
 local function bot_namer()
     local first = {
-        "A", "An", "Ba", "Bi", "Bo", "Bom", "Bon", "Da", "Dan",
-        "Dar", "De", "Do", "Du", "Due", "Duer", "Dwa", "Fa", "Fal", "Fi",
-        "Fre", "Fun", "Ga", "Gal", "Gar", "Gam", "Gim", "Glo", "Go", "Gom",
-        "Gro", "Gwar", "Ib", "Jor", "Ka", "Ki", "Kil", "Lo", "Mar", "Na",
-        "Nal", "O", "Ras", "Ren", "Ro", "Ta", "Tar", "Tel", "Thi", "Tho",
-        "Thon", "Thra", "Tor", "Von", "We", "Wer", "Yen", "Yur"
+        "Robo", "Cyber", "Mecha", "Gizmo", "Bionic", "Nano", "Astro", "Zippy", "Electro", "Super",
+        "Turbo", "Giga", "Hyper", "Atomic", "Laser", "Jet", "Rocket", "Metal", "Power", "Circuit"
     }
-    local after = {
-        "bil", "bin", "bur", "char", "den", "dir", "dur", "fri", "fur", "in",
-        "li", "lin", "mil", "mur", "ni", "nur", "ran", "ri", "ril", "rimm", "rin",
-        "thur", "tri", "ulf", "un", "ur", "vi", "vil", "vim", "vin", "vri"
+    local last = {
+        "Buddy", "Pal", "Friend", "Eater", "Pooper", "Zoom", "Meow", "Snack", "Bot", "Flash"
     }
-    return first[math.random(#first)] ..
-           after[math.random(#after)] ..
-           after[math.random(#after)]
+    return first[math.random(#first)] .. " " .. last[math.random(#last)]
 end
+
 
 -------------------------------------
 -- Generate 32 bit key for formspec identification
 -------------------------------------
-function vbots.get_key()
+function VBOTS.get_key()
     math.randomseed(minetest.get_us_time())
-    local w = math.random()
-    local key = tostring( math.random(255) +
-            math.random(255) * 256 +
-            math.random(255) * 256*256 +
-            math.random(255) * 256*256*256 )
-    return key
+    return tostring( math.random(256*256*256*256) )
 end
 
 -------------------------------------
 -- callback from bot node on_rightclick
 -------------------------------------
-vbots.bot_restore = function(pos)
+VBOTS.bot_restore = function(pos)
     local meta = minetest.get_meta(pos)
     local bot_key = meta:get_string("key")
     local bot_owner = meta:get_string("owner")
     local bot_name = meta:get_string("name")
-    if not vbots.bot_info[bot_key] then
-        vbots.bot_info[bot_key] = { owner = bot_owner, pos = pos, name = bot_name}
+    if not VBOTS.bot_info[bot_key] then
+        VBOTS.bot_info[bot_key] = { owner = bot_owner, pos = pos, name = bot_name}
         meta:set_string("infotext", bot_name .. " (" .. bot_owner .. ")")
-        --print(dump(vbots.bot_info))
+        --print(dump(VBOTS.bot_info))
     end
 end
 
@@ -69,21 +82,21 @@ end
 -------------------------------------
 -- callback from bot node after_place_node
 -------------------------------------
-vbots.bot_init = function(pos, placer)
+VBOTS.bot_init = function(pos, placer)
     local bot_owner = placer:get_player_name()
     local bot_name = bot_namer()
-    local bot_key = vbots.get_key()
-    vbots.bot_info[bot_key] = { owner = bot_owner, pos = pos, name = bot_name}
+    local bot_key = VBOTS.get_key()
+    VBOTS.bot_info[bot_key] = { owner = bot_owner, pos = pos, name = bot_name}
     local meta = minetest.get_meta(pos)
 	meta:set_string("infotext", bot_name .. " (" .. bot_owner .. ")")
     local inv = meta:get_inventory()
-    inv:set_size("p0", 56)
-    inv:set_size("p1", 56)
-    inv:set_size("p2", 56)
-    inv:set_size("p3", 56)
-    inv:set_size("p4", 56)
-    inv:set_size("p5", 56)
-    inv:set_size("p6", 56)
+    inv:set_size("p0", VBOTS.INVENTORY_SIZE)
+    inv:set_size("p1", VBOTS.INVENTORY_SIZE)
+    inv:set_size("p2", VBOTS.INVENTORY_SIZE)
+    inv:set_size("p3", VBOTS.INVENTORY_SIZE)
+    inv:set_size("p4", VBOTS.INVENTORY_SIZE)
+    inv:set_size("p5", VBOTS.INVENTORY_SIZE)
+    inv:set_size("p6", VBOTS.INVENTORY_SIZE)
     inv:set_size("main", 32)
     inv:set_size("trash", 1)
 
@@ -109,7 +122,7 @@ vbots.bot_init = function(pos, placer)
     meta:mark_as_private("stack")
 end
 
-vbots.wipe_programs = function(pos)
+VBOTS.wipe_programs = function(pos)
     local meta = minetest.get_meta(pos)
     local meta_table = meta:to_table()
     local inv = meta:get_inventory()
@@ -124,8 +137,8 @@ vbots.wipe_programs = function(pos)
     end
 end
 
-vbots.save = function(pos)
-    vbots.bot_restore(pos)
+VBOTS.save = function(pos)
+    VBOTS.bot_restore(pos)
     local meta = minetest.get_meta(pos)
     local meta_table = meta:to_table()
     local botname = meta:get_string("name")
@@ -144,8 +157,8 @@ vbots.save = function(pos)
     mod_storage:set_string(name..",vbotsep,"..botname,minetest.serialize(inv_list))
 end
 
-vbots.load = function(pos,player,mode)
-    vbots.bot_restore(pos)
+VBOTS.load = function(pos,player,mode)
+    VBOTS.bot_restore(pos)
     local meta = minetest.get_meta(pos)
     local key = meta:get_string("key")
     local data = mod_storage:to_table().fields
@@ -196,7 +209,7 @@ end
 
 
 
-vbots.bot_togglestate = function(pos,mode)
+VBOTS.bot_togglestate = function(pos,mode)
     local meta = minetest.get_meta(pos)
     local node = minetest.get_node(pos)
     local timer = minetest.get_node_timer(pos)
@@ -229,8 +242,8 @@ vbots.bot_togglestate = function(pos,mode)
 end
 
 
-dofile(vbots.modpath.."/formspec.lua")
-dofile(vbots.modpath.."/formspec_handler.lua")
-dofile(vbots.modpath.."/register_bot.lua")
-dofile(vbots.modpath.."/register_commands.lua")
-dofile(vbots.modpath.."/register_joinleave.lua")
+dofile(VBOTS.modpath.."/formspec.lua")
+dofile(VBOTS.modpath.."/formspec_handler.lua")
+dofile(VBOTS.modpath.."/register_bot.lua")
+dofile(VBOTS.modpath.."/register_commands.lua")
+dofile(VBOTS.modpath.."/register_joinleave.lua")
