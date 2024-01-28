@@ -7,8 +7,8 @@
 VBOTS={}
 VBOTS.modpath = minetest.get_modpath("vbots")
 VBOTS.bot_info = {}
-
-VBOTS.INVENTORY_SIZE = 8
+dofile(VBOTS.modpath.."/stack.lua")
+VBOTS.PROGRAM_SIZE = 8
 
 minetest.create_detached_inventory("bot_commands", {
     allow_move = function(inv, from_list, from_index, to_list, to_index, count, player2)
@@ -90,13 +90,13 @@ VBOTS.bot_init = function(pos, placer)
     local meta = minetest.get_meta(pos)
 	meta:set_string("infotext", bot_name .. " (" .. bot_owner .. ")")
     local inv = meta:get_inventory()
-    inv:set_size("p0", VBOTS.INVENTORY_SIZE)
-    inv:set_size("p1", VBOTS.INVENTORY_SIZE)
-    inv:set_size("p2", VBOTS.INVENTORY_SIZE)
-    inv:set_size("p3", VBOTS.INVENTORY_SIZE)
-    inv:set_size("p4", VBOTS.INVENTORY_SIZE)
-    inv:set_size("p5", VBOTS.INVENTORY_SIZE)
-    inv:set_size("p6", VBOTS.INVENTORY_SIZE)
+    inv:set_size("p0", VBOTS.PROGRAM_SIZE)
+    inv:set_size("p1", VBOTS.PROGRAM_SIZE)
+    inv:set_size("p2", VBOTS.PROGRAM_SIZE)
+    inv:set_size("p3", VBOTS.PROGRAM_SIZE)
+    inv:set_size("p4", VBOTS.PROGRAM_SIZE)
+    inv:set_size("p5", VBOTS.PROGRAM_SIZE)
+    inv:set_size("p6", VBOTS.PROGRAM_SIZE)
     inv:set_size("main", 32)
     inv:set_size("trash", 1)
 
@@ -207,6 +207,44 @@ VBOTS.load = function(pos,player,mode)
 end
 
 
+VBOTS.serialize_program = function(node_metadata)
+    local inventory = node_metadata:get_inventory()
+    local programs = {}
+    for i=0,6 do
+        local inventory_name = "p"..i
+        programs[i] = {}
+        local stack_in = Stack:new()
+        local stack_out = Stack:new()
+        for j=1,8 do
+            local code = inventory:get_stack(inventory_name, j):get_name()
+            if code then
+                stack_in:push(code)
+            end
+        end
+
+        local do_it_again = 1
+        for code in stack_in:iterator() do
+            local number = code:match("vbots:add_(%d+)")
+            if number then
+                do_it_again = do_it_again + tonumber(number)
+            elseif code ~= "" then
+                for j=1,do_it_again do
+                    stack_out:push(code)
+                end
+                do_it_again = 1
+            end
+        end
+
+        local j = 0
+        for code in stack_out:iterator() do
+            print(tostring(i)..":"..tostring(j)..":"..code)
+            programs[i][j] = code
+            j = j + 1
+        end
+    end
+    print(programs)
+    return programs
+end
 
 
 VBOTS.bot_togglestate = function(pos,mode)
@@ -228,6 +266,11 @@ VBOTS.bot_togglestate = function(pos,mode)
         meta:set_int("PR",0)
         meta:set_string("stack","")
         meta:set_string("home",minetest.serialize(pos))
+        local programs = minetest.serialize(VBOTS.serialize_program(meta))
+        print("Serialized: ")
+        print( programs)
+        meta:set_string("programs", programs)
+        meta:set_int("steptime", 9)
     elseif mode == "off" then
         newname = "vbots:off"
         timer:stop()

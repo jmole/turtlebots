@@ -48,7 +48,7 @@ minetest.register_on_player_receive_fields(function(player, bot_key, fields)
             if fields.trash then
                 local last = 0
                 local content = inv:get_list("p"..meta:get_int("program"))
-                for a = 1,VBOTS.INVENTORY_SIZE do
+                for a = 1,VBOTS.PROGRAM_SIZE do
                     if not content[a]:is_empty() then last=a end
                 end
                 if last>0 then
@@ -65,8 +65,10 @@ minetest.register_on_player_receive_fields(function(player, bot_key, fields)
                         end
                         if nametable[1]=="move" or
                                 nametable[1]=="turn" or
+                                nametable[1]=="add" or
                                 nametable[1]=="number" or
                                 nametable[1]=="mode" or
+                                nametable[1]=="block" or
                                 nametable[1]=="run" then
                             --print("COMMAND!!!!!!!")
                             local leftover = inv:add_item("p"..meta:get_int("program"), ItemStack("vbots:"..f))

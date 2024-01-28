@@ -24,10 +24,32 @@ register_command("move_down","Move bot down","vbots_move_down.png")
 register_command("move_left","Move bot left","vbots_move_left.png")
 register_command("move_right","Move bot right","vbots_move_right.png")
 register_command("move_home","Move bot to start position","vbots_move_home.png")
+register_command("stand_still","Do Nothing","vbots_stand_still.png")
 
 register_command("turn_clockwise","Turn bot 90° clockwise","vbots_turn_clockwise.png")
 register_command("turn_anticlockwise","Move bot 90° anti-clockwise","vbots_turn_anticlockwise.png")
 register_command("turn_random","Move bot 90° in a random direction","vbots_turn_random.png")
+
+
+register_command("block_red","Add a red block to your queue", "vbots_block_red.png")
+register_command("block_orange","Add an orange block to your queue", "vbots_block_orange.png")
+register_command("block_yellow","Add a green block to your queue", "vbots_block_yellow.png")
+register_command("block_green","Add a green block to your queue", "vbots_block_green.png")
+register_command("block_grey","Add a grey block to your queue", "vbots_block_grey.png")
+register_command("block_white","Add a white block to your queue", "vbots_block_white.png")
+register_command("block_black","Add a black block to your queue", "vbots_block_black.png")
+register_command("block_blue","Add a blue block to your queue", "vbots_block_blue.png")
+register_command("block_cyan","Add a cyan block to your queue", "vbots_block_cyan.png")
+register_command("block_pink","Add a pink block to your queue", "vbots_block_pink.png")
+register_command("block_clear","Remove all blocks from your queue", "vbots_block_clear.png")
+
+
+register_command("add_1","plus one more time", "vbots_plus_1.png")
+register_command("add_2","plus two more times", "vbots_plus_2.png")
+register_command("add_4","plus four more times", "vbots_plus_4.png")
+register_command("add_8","plus eight more times", "vbots_plus_8.png")
+register_command("add_16","plus sixteen more times", "vbots_plus_16.png")
+
 
 -- register_command("case_end","End section","vbots_case_end.png")
 -- register_command("case_failure","Last action failed","vbots_case_failure.png")

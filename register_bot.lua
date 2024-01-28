@@ -5,28 +5,26 @@
 local function push_state(pos,a,b,c)
     local meta = minetest.get_meta(pos)
     local stack = meta:get_string("stack")
-    local push = a..","..b..","..c..","
+    local push = a..","..b..";"
     meta:set_string("stack", push..stack)
+    print(meta:get_string("stack"))
 end
 
 local function pull_state(pos)
     local meta = minetest.get_meta(pos)
     local stack = meta:get_string("stack")
-    local newstack = ""
-    local heap = string.split(stack,",")
-    if #heap>2 then
-        meta:set_int("PC",heap[1])
-        meta:set_int("PR",heap[2])
-        meta:set_int("repeat",heap[3])
-        if #heap>3 then
-            for a = 4,#heap do
-                newstack = newstack .. heap[a] .. ","
-            end
-            meta:set_string("stack",newstack)
+    local top = string.find(stack,";")
+    if top then
+        local vars = string.split(string.sub(stack,1,top-1), ",")
+        meta:set_int("PC",tonumber(vars[1]))
+        meta:set_int("PR",tonumber(vars[2]))
+        if stack:len() > top then
+            meta:set_string("stack",stack:sub(top+1))
         else
             meta:set_string("stack","")
         end
     end
+    print(meta:get_string("stack"))
 end
 
 -------------------------------------
@@ -192,12 +190,12 @@ local function move_bot(pos,direction)
     elseif direction == "b" then
         print("backwards")
         newpos = {x = pos.x+dir.x, y = pos.y, z = pos.z+dir.z}
-    elseif direction == "r" then
-        print("right")
-        newpos = {x = pos.x-dir.z, y = pos.y, z = pos.z-dir.x}
     elseif direction == "l" then
         print("left")
-        newpos = {x = pos.x+dir.z, y = pos.y, z = pos.z+dir.x}
+        newpos = {x = pos.x+dir.z, y = pos.y, z = pos.z-dir.x}
+    elseif direction == "r" then
+        print("right")
+        newpos = {x = pos.x-dir.z, y = pos.y, z = pos.z+dir.x}
     end
     if newpos then
         if not string.find(minetest.get_node(newpos).name, "vbots") then
@@ -214,7 +212,7 @@ local function move_bot(pos,direction)
                 math.abs(ppos.z-pos.z)<1.1 and
                 math.abs(ppos.y-pos.y)<2 and
                 ppos.y>pos.y then
-            player:setpos({x=newpos.x, y=newpos.y+1.1, z=newpos.z })
+            player:setpos({x=newpos.x, y=newpos.y+0.5, z=newpos.z })
         end
     end
 end
@@ -257,7 +255,7 @@ end
 local function bot_parsecommand(pos,item)
     local meta = minetest.get_meta(pos)
     local bot_owner = meta:get_string("owner")
-    print(item)
+    print("parsecommand:"..item)
     if item == "vbots:move_forward" then
         move_bot(pos,"f")
     elseif item == "vbots:move_backward" then
@@ -334,54 +332,22 @@ end
 
 local function bot_handletimer(pos)
     local meta = minetest.get_meta(pos)
-    local inv = meta:get_inventory()
     local PC = meta:get_int("PC")
     local PR = meta:get_int("PR")
-    local invname = "p"..PR
     local stack = meta:get_string("stack")
-
-    local taken = inv:get_stack(invname, PC)
-    local command = taken:get_name()
-
-	local blockname = inv:get_stack(invname, PC+1):get_name()
-	if string.split(blockname,":")[1]~="vbots" then
-		meta:set_string("withblock",blockname)
-	else
-		meta:set_string("withblock","")
-	end
-
-    local todo = meta:get_int("repeat")
-    if todo == 0 then
-        PC=PC+1
-        while(command == "" and PC<57) do
-            taken = inv:get_stack(invname, PC)
-            command = taken:get_name()
-            PC=PC+1
-        end
-        local hasarg = string.split(inv:get_stack(invname, PC):get_name(),"_")
-        -- print( PC.." "..dump(hasarg))
-        if hasarg[1] == "vbots:number" then
-            if tonumber(hasarg[2])>1 then
-                meta:set_int("repeat", hasarg[2]-1)
-            end
-            PC=PC+1
-        end
-    else
-        command = inv:get_stack(invname, PC-2):get_name()
-        meta:set_int("repeat", todo-1)
+    local programs = meta:get_string("programs")
+    programs = minetest.deserialize(programs)
+    if not programs then
+        return false
     end
-    meta:set_int("PC",PC)
+    local command = programs[PR][PC] or "return"
+    meta:set_int("PC",PC+1)
     meta:set_int("PR",PR)
     meta:set_string("stack",stack)
-    if PC<VBOTS.INVENTORY_SIZE+2 then
-        -- print("mainloop PR:"..meta:get_int("PR")..
-        --   " PC:"..meta:get_int("PC")..
-        --   " R:"..meta:get_int("repeat")..
-        --   " : "..command)
+    if command ~= "return" then
         bot_parsecommand(pos, command)
         return true
     else
-        -- print("Program "..PR.." ending.")
         if PR ~=0 then
             pull_state(pos)
             return true
