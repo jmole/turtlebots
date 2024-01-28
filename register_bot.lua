@@ -27,6 +27,39 @@ local function pull_state(pos)
     print(meta:get_string("stack"))
 end
 
+
+local function clear_block_stack(pos)
+    local meta = minetest.get_meta(pos)
+    meta:set_string("block_stack", "")
+end
+
+local function add_block_to_stack(pos, block)
+    print("Addblock:"..block)
+    local meta = minetest.get_meta(pos)
+    local bs = meta:get_string("block_stack")
+    meta:set_string("block_stack", bs..block..";")
+    print(meta:get_string("block_stack"))
+end
+
+local function get_block_from_stack(pos)
+    local meta = minetest.get_meta(pos)
+    local bs = meta:get_string("block_stack")
+    local front = string.find(bs,";")
+    if front then
+        local block = string.sub(bs,1,front-1)
+        if (bs:len() > front) then
+            meta:set_string("block_stack",bs:sub(front+1))
+        else
+            meta:set_string("block_stack","")
+        end
+        print(meta:get_string("block_stack"))
+        return block
+    end
+    print(meta:get_string("block_stack"))
+    return nil
+end
+
+
 -------------------------------------
 -- callback from bot node can_dig
 -------------------------------------
@@ -135,7 +168,16 @@ local function bot_build(pos, buildpos)
     local dir = minetest.facedir_to_dir(node.param2)
     local withblock = meta:get("withblock")
 
+    local block_type = get_block_from_stack(pos)
+    print(block_type)
+
     local buildnode = minetest.get_node(buildpos)
+
+    if (block_type) then
+        local block_name = "vbots:block_"..block_type
+        minetest.set_node(buildpos,{name=block_name})
+    end
+
 
     if not minetest.is_protected(buildpos, bot_owner) and basically_empty(buildnode) then
         local content = inv:get_list("main")
@@ -198,7 +240,8 @@ local function move_bot(pos,direction)
         newpos = {x = pos.x-dir.z, y = pos.y, z = pos.z+dir.x}
     end
     if newpos then
-        if not string.find(minetest.get_node(newpos).name, "vbots") then
+        if not string.find(minetest.get_node(newpos).name, "vbots:on")
+           and not string.find(minetest.get_node(newpos).name, "vbots:off") then
             if not minetest.is_protected(newpos, bot_owner) then
                 minetest.set_node(newpos,{name="air"})
             end
@@ -287,22 +330,33 @@ local function bot_parsecommand(pos,item)
         else
             meta:set_int("steptime",1)
         end
-    elseif item == "vbots:mode_dig" then
-        bot_dig(pos,0)
-        move_bot(pos,"f")
-    elseif item == "vbots:mode_dig_down" then
-        bot_dig(pos,-1)
-        move_bot(pos,"d")
-    elseif item == "vbots:mode_dig_up" then
-        bot_dig(pos,1)
-        move_bot(pos,"u")
-    elseif item == "vbots:mode_build" then
-        bot_build(pos,0)
-    elseif item == "vbots:mode_build_down" then
-        bot_build(pos,-1)
-    elseif item == "vbots:mode_build_up" then
-        bot_build(pos,1)
+    elseif string.find(item, "vbots:loadblock_") then
+        local item_parts = string.split(item,"_")
+        local block_action = item_parts[2]
+        if (block_action == "clear") then
+            clear_block_stack(pos)
+        elseif block_action then
+            add_block_to_stack(pos, block_action)
+        end
     end
+
+        -- Your code here
+    -- elseif item == "vbots:mode_dig" then
+    --     bot_dig(pos,0)
+    --     move_bot(pos,"f")
+    -- elseif item == "vbots:mode_dig_down" then
+    --     bot_dig(pos,-1)
+    --     move_bot(pos,"d")
+    -- elseif item == "vbots:mode_dig_up" then
+    --     bot_dig(pos,1)
+    --     move_bot(pos,"u")
+    -- elseif item == "vbots:mode_build" then
+    --     bot_build(pos,0)
+    -- elseif item == "vbots:mode_build_down" then
+    --     bot_build(pos,-1)
+    -- elseif item == "vbots:mode_build_up" then
+    --     bot_build(pos,1)
+    -- end
     local item_parts = string.split(item,"_")
     if item_parts[1]=="vbots:run" then
         local PC = meta:get_int("PC")

@@ -207,6 +207,14 @@ VBOTS.load = function(pos,player,mode)
 end
 
 
+VBOTS.get_block_name = function(color)
+    return "vbots:block_"..color
+end
+
+VBOTS.get_block_texture = function(color)
+    return "vbots_block_"..color..".png"
+end
+
 VBOTS.serialize_program = function(node_metadata)
     local inventory = node_metadata:get_inventory()
     local programs = {}
@@ -261,6 +269,7 @@ VBOTS.bot_togglestate = function(pos,mode)
     end
     if mode == "on" then
         newname = "vbots:on"
+        meta:set_int("steptime", 10)
         timer:start(1/meta:get_int("steptime"))
         meta:set_int("PC",0)
         meta:set_int("PR",0)
@@ -270,7 +279,6 @@ VBOTS.bot_togglestate = function(pos,mode)
         print("Serialized: ")
         print( programs)
         meta:set_string("programs", programs)
-        meta:set_int("steptime", 9)
     elseif mode == "off" then
         newname = "vbots:off"
         timer:stop()

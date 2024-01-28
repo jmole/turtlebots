@@ -31,17 +31,17 @@ register_command("turn_anticlockwise","Move bot 90° anti-clockwise","vbots_turn
 register_command("turn_random","Move bot 90° in a random direction","vbots_turn_random.png")
 
 
-register_command("block_red","Add a red block to your queue", "vbots_block_red.png")
-register_command("block_orange","Add an orange block to your queue", "vbots_block_orange.png")
-register_command("block_yellow","Add a green block to your queue", "vbots_block_yellow.png")
-register_command("block_green","Add a green block to your queue", "vbots_block_green.png")
-register_command("block_grey","Add a grey block to your queue", "vbots_block_grey.png")
-register_command("block_white","Add a white block to your queue", "vbots_block_white.png")
-register_command("block_black","Add a black block to your queue", "vbots_block_black.png")
-register_command("block_blue","Add a blue block to your queue", "vbots_block_blue.png")
-register_command("block_cyan","Add a cyan block to your queue", "vbots_block_cyan.png")
-register_command("block_pink","Add a pink block to your queue", "vbots_block_pink.png")
-register_command("block_clear","Remove all blocks from your queue", "vbots_block_clear.png")
+register_command("loadblock_red","Add a red block to your queue", "vbots_loadblock_red.png")
+register_command("loadblock_orange","Add an orange block to your queue", "vbots_loadblock_orange.png")
+register_command("loadblock_yellow","Add a green block to your queue", "vbots_loadblock_yellow.png")
+register_command("loadblock_green","Add a green block to your queue", "vbots_loadblock_green.png")
+register_command("loadblock_grey","Add a grey block to your queue", "vbots_loadblock_grey.png")
+register_command("loadblock_white","Add a white block to your queue", "vbots_loadblock_white.png")
+register_command("loadblock_black","Add a black block to your queue", "vbots_loadblock_black.png")
+register_command("loadblock_blue","Add a blue block to your queue", "vbots_loadblock_blue.png")
+register_command("loadblock_cyan","Add a cyan block to your queue", "vbots_loadblock_cyan.png")
+register_command("loadblock_pink","Add a pink block to your queue", "vbots_loadblock_pink.png")
+register_command("loadblock_clear","Remove all blocks from your queue", "vbots_loadblock_clear.png")
 
 
 register_command("add_1","plus one more time", "vbots_plus_1.png")
@@ -89,4 +89,33 @@ register_command("run_3","Run sub-program 3","vbots_run_3.png")
 register_command("run_4","Run sub-program 4","vbots_run_4.png")
 register_command("run_5","Run sub-program 5","vbots_run_5.png")
 register_command("run_6","Run sub-program 6","vbots_run_6.png")
+
+
+
+
+local function create_block(color)
+    minetest.register_node(VBOTS.get_block_name(color), {
+        description = color.." block",
+        tiles = {VBOTS.get_block_texture(color)},
+        groups = {cracky=3,oddly_breakable_by_hand=3, bot_commands = 1, not_in_creative_inventory = 1},
+        stack_max = 1,
+    })
+    minetest.register_node(VBOTS.get_block_name(color).."_create", {
+        description = color.." block",
+        tiles = {VBOTS.get_block_texture(color)},
+        groups = {cracky=3,oddly_breakable_by_hand=3},
+        stack_max = 64,
+    })
+end
+
+create_block("red")
+create_block("orange")
+create_block("yellow")
+create_block("green")
+create_block("grey")
+create_block("white")
+create_block("black")
+create_block("blue")
+create_block("cyan")
+create_block("pink")
 
