@@ -418,14 +418,16 @@ end
 -------------------------------------
 local function register_bot(node_name,node_desc,node_tiles,node_groups)
     minetest.register_node(node_name, {
+        drawtype = "mesh",
+        mesh = "turtle.obj",
         description = node_desc,
-        tiles = node_tiles,
+        tiles = {"turtle_texture.png"},
         stack_max = 1,
         is_ground_content = false,
         paramtype2 = "facedir",
         legacy_facedir_simple = true,
         groups = node_groups,
-        --light_source = 14,
+        light_source = 14,
         on_blast = function() end,
         after_place_node = function(pos, placer, itemstack, pointed_thing)
             VBOTS.bot_init(pos, placer)
