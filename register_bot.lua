@@ -1,6 +1,18 @@
--------------------------------------
--- Cute 'unique' bot name generator
--------------------------------------
+local function show_command(pos, command)
+    command = string.gsub(command, ":", "_")
+    local particle = {
+        pos = pos,
+        vel = {x=0.2,y=2,z=0.2},
+        drag = 1,
+        texture = command..".png",
+        vertical = false,
+        size = 4,
+    }
+
+    print(particle.texture)
+    particle.pos.y = particle.pos.y + 0.5
+    minetest.add_particle(particle)
+end
 
 local function push_state(pos,a,b,c)
     local meta = minetest.get_meta(pos)
@@ -400,6 +412,8 @@ local function bot_handletimer(pos)
     meta:set_string("stack",stack)
     if command ~= "return" then
         bot_parsecommand(pos, command)
+        show_command(pos,command)
+        print("ok...")
         return true
     else
         if PR ~=0 then
@@ -421,6 +435,7 @@ local function register_bot(node_name,node_desc,node_tiles,node_groups)
         drawtype = "mesh",
         mesh = "turtle.obj",
         description = node_desc,
+        use_texture_alpha = true,
         tiles = {"turtle_texture.png"},
         stack_max = 1,
         is_ground_content = false,
@@ -432,7 +447,7 @@ local function register_bot(node_name,node_desc,node_tiles,node_groups)
         after_place_node = function(pos, placer, itemstack, pointed_thing)
             VBOTS.bot_init(pos, placer)
             local facing = minetest.dir_to_facedir(placer:get_look_dir())
-            facing = (facing+2)%4
+            --facing = (facing)%4
             facebot(facing,pos)
         end,
         on_punch = function(pos, node, player, pointed_thing)
