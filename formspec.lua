@@ -118,7 +118,7 @@ local function panel_commands()
         {blank_space, "move_down", },
         { "run_1",          "run_2",              "run_3",          "run_4",     "run_5",     "run_6" }
     }
-    local panel = highlight(0, 1.5, 7, 8, "f", "f", "f")
+    local panel = highlight(0, 1.5, 7, 9, "f", "f", "f")
     -- ..highlight(0, 5, 7, 4.5, "9", "9", "f")
     .. "container[0.25,0.25]"
 
@@ -129,10 +129,10 @@ local function panel_commands()
     ..button_row_space(3.5,1.5,0.01, {blank_space, "move_up" })
     ..button_row_space(3.5,2.5,0.01, {"turn_anticlockwise", "stand_still","turn_clockwise" })
     ..button_row_space(3.5,3.5,0.01, {blank_space, "move_down", })
-    ..button_row_space(0.225,5,0.01,{"loadblock_red", "loadblock_orange", "loadblock_yellow", "loadblock_green", "loadblock_grey", "loadblock_clear"})
-    ..button_row_space(0.225,6,0.01,{"loadblock_cyan", "loadblock_blue", "loadblock_pink", "loadblock_white", "loadblock_black","add_1"})
-    ..button_row_space(0.225,7,0.01,{"run_1", "run_2", "run_3", blank_space, "add_2", "add_4"})
-    ..button_row_space(0.225,8,0.01,{"run_4", "run_5", "run_6", blank_space, "add_8", "add_16"})
+    ..button_row_space(0.225,5.5,0.01,{"loadblock_red", "loadblock_orange", "loadblock_yellow", "loadblock_green", "loadblock_grey", "loadblock_clear"})
+    ..button_row_space(0.225,6.5,0.01,{"loadblock_cyan", "loadblock_blue", "loadblock_pink", "loadblock_white", "loadblock_black","add_1"})
+    ..button_row_space(0.225,7.5,0.01,{"run_1", "run_2", "run_3", "run_4", "add_2", "add_4"})
+    ..button_row_space(0.225,8.5,0.01,{"run_5", "run_6", "run_7", "run_8", "add_8", "add_16"})
 
     -- for row, namelist in pairs(commands) do
     --     panel = panel .. button_row(0, row + 0.5, namelist)
@@ -163,14 +163,14 @@ local function draw_subroutines(pos, program)
     subroutines = subroutines .. "container[1,0]"
 
     -- highlight coding area in grey
-    subroutines = subroutines .. highlight(7, 1.5, 9, program, "9", "9", "f")
-    subroutines = subroutines .. highlight(7, 1.5+program+1,9, 6-program, "9", "9", "f")
+    subroutines = subroutines .. highlight(7, 1.5, VBOTS.PROGRAM_SIZE+1, program, "9", "9", "f")
+    subroutines = subroutines .. highlight(7, 1.5+program+1,VBOTS.PROGRAM_SIZE+1, 8-program, "9", "9", "f")
     -- highlight selected program in pink
-    subroutines = subroutines .. highlight(6, 1.5 + program, 10, 1, "f", "f", "f")
+    subroutines = subroutines .. highlight(6, 1.5 + program, VBOTS.PROGRAM_SIZE+2, 1, "f", "f", "f")
     subroutines = subroutines .. string.format("image[%s,%s;1,1;vbots_selected.png]",6, 1.5 + program)
 
-    local prog_names = {"PROGRAM START", "PROGRAM A", "PROGRAM B", "PROGRAM C", "PROGRAM D", "PROGRAM E", "PROGRAM F"}
-    for i = 0, 6 do
+    local prog_names = {"PROGRAM START", "PROGRAM A", "PROGRAM B", "PROGRAM C", "PROGRAM D", "PROGRAM E", "PROGRAM F", "PROGRAM G", "PROGRAM H"}
+    for i = 0, 8 do
         -- program list
         subroutines = subroutines
             .. padded_list("nodemeta:" .. pos, "p" .. i, 8, i + 1.5, VBOTS.PROGRAM_SIZE, 1)
@@ -197,8 +197,8 @@ local function panel_code(pos, program)
         -- .. button(11, 0, "vbots_gui_load.png", "load", true)
         -- .. button(12, 0, "vbots_gui_save.png", "save", true)
 
-        .. highlight(16, 0, 1, 1, "f", "0", "0")
-        .. button(16, 0, "vbots_gui_exit.png", "exit", true)
+        .. highlight(8+VBOTS.PROGRAM_SIZE, 0, 1, 1, "f", "0", "0")
+        .. button(8+VBOTS.PROGRAM_SIZE, 0, "vbots_gui_exit.png", "exit", true)
 
         -- trash can
         .. highlight(11, 0, 2, 1, "0", "0", "0")
@@ -228,7 +228,7 @@ local function get_formspec(pos, meta)
     --print("Panel:"..fs_panel)
     --print("Program:"..fs_program)
     local formspec = "formspec_version[7]"
-        .. "size[17.5,10]"
+        .. string.format("size[%s,11]",9.5+VBOTS.PROGRAM_SIZE)
         .. "container[0.25,0.25]"
         .. maketext(3, 0.25, bot_name, "big")
         .. panel_main(bot_pos, fs_panel)

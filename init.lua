@@ -8,7 +8,7 @@ VBOTS={}
 VBOTS.modpath = minetest.get_modpath("vbots")
 VBOTS.bot_info = {}
 dofile(VBOTS.modpath.."/stack.lua")
-VBOTS.PROGRAM_SIZE = 8
+VBOTS.PROGRAM_SIZE = 12
 
 minetest.create_detached_inventory("bot_commands", {
     allow_move = function(inv, from_list, from_index, to_list, to_index, count, player2)
@@ -97,6 +97,8 @@ VBOTS.bot_init = function(pos, placer)
     inv:set_size("p4", VBOTS.PROGRAM_SIZE)
     inv:set_size("p5", VBOTS.PROGRAM_SIZE)
     inv:set_size("p6", VBOTS.PROGRAM_SIZE)
+    inv:set_size("p7", VBOTS.PROGRAM_SIZE)
+    inv:set_size("p8", VBOTS.PROGRAM_SIZE)
     inv:set_size("main", 32)
     inv:set_size("trash", 1)
 

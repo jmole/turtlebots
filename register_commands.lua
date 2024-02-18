@@ -92,6 +92,8 @@ register_command("run_3","START PROGRAM C","vbots_run_3.png")
 register_command("run_4","START PROGRAM D","vbots_run_4.png")
 register_command("run_5","START PROGRAM E","vbots_run_5.png")
 register_command("run_6","START PROGRAM F","vbots_run_6.png")
+register_command("run_7","START PROGRAM G","vbots_run_7.png")
+register_command("run_8","START PROGRAM H","vbots_run_8.png")
 
 
 
