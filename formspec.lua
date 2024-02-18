@@ -24,7 +24,7 @@ local function padded_list_of_size(inventory, list, x, y, w, h, numx, numy, padd
     local list_string =
         string.format("style_type[list;size=%s,%s;spacing=%s]", w, h, spacing) ..
         string.format("list[%s;%s;%s,%s;%s,%s]", inventory, list, x, y, numx, numy)
-    print(list_string)
+    -- print(list_string)
     return list_string
 end
 
@@ -37,14 +37,14 @@ end
 -- Formspec button generators
 -------------------------------------
 
-local function _image_button(x, y, w, h, image, name, exit)
+local function _image_button(x, y, w, h, image, name, tooltip, exit)
     local padding = 0.1
     x = x + padding
     y = y + padding
     w = w - padding * 2
     h = h - padding * 2
     return "image_button"..exit.."[" .. x .. "," .. y .. ";" .. w .. "," .. h .. ";" .. image .. ";" .. name .. ";]" ..
-        "tooltip[" .. x .. "," .. y .. ";" .. w .. "," .. h .. ";" .. name .. "]"
+        "tooltip[" .. x .. "," .. y .. ";" .. w .. "," .. h .. ";" .. tooltip .. "]"
 end
 
 local function item_image_button_padding(x,y,w,h,padding,name)
@@ -58,11 +58,17 @@ end
 local function item_image_button(x,y,w,h,name)
     return item_image_button_padding(x,y,w,h,0,name)
 end
+local function image_button_tooltip(x, y, w, h, image, name, tooltip)
+    return _image_button(x, y, w, h, image, name, tooltip, "")
+end
 local function image_button(x, y, w, h, image, name)
-    return _image_button(x, y, w, h, image, name, "")
+    return _image_button(x, y, w, h, image, name, name, "")
 end
 local function image_button_exit(x, y, w, h, image, name)
-    return _image_button(x, y, w, h, image, name, "_exit")
+    return _image_button(x, y, w, h, image, name, name, "_exit")
+end
+local function button_tooltip(x, y, image, tooltip, command)
+    return image_button_tooltip(x, y, 1, 1, image, command, tooltip)
 end
 local function button(x, y, image, name, exit)
     if not exit then
@@ -113,21 +119,20 @@ local function panel_commands()
         { "run_1",          "run_2",              "run_3",          "run_4",     "run_5",     "run_6" }
     }
     local panel = highlight(0, 1.5, 7, 8, "f", "f", "f")
-    ..highlight(0, 5, 7, 4.5, "0", "0", "0")
-    ..highlight(0, 5, 7, 4.5, "0", "0", "0")
+    -- ..highlight(0, 5, 7, 4.5, "9", "9", "f")
     .. "container[0.25,0.25]"
 
     panel = panel
-    ..button_row(0,1.5, { "__blank", "move_forward", "__blank"})
-    ..button_row(0,2.5, { "move_left", "stand_still", "move_right"})
-    ..button_row(0,3.5, { "__blank", "move_backward", "__blank"})
-    ..button_row(3.5,1.5, {blank_space, "move_up" })
-    ..button_row(3.5,2.5, {"turn_anticlockwise", "stand_still","turn_clockwise" })
-    ..button_row(3.5,3.5, {blank_space, "move_down", })
-    ..button_row_space(0.225,5,0,{"loadblock_red", "loadblock_orange", "loadblock_yellow", "loadblock_green", "loadblock_grey", "loadblock_clear"})
-    ..button_row_space(0.225,6,0,{"loadblock_cyan", "loadblock_blue", "loadblock_pink", "loadblock_white", "loadblock_black","add_1"})
-    ..button_row_space(0.225,7,0,{"run_1", "run_2", "run_3", blank_space, "add_2", "add_4"})
-    ..button_row_space(0.225,8,0,{"run_4", "run_5", "run_6", blank_space, "add_8", "add_16"})
+    ..button_row_space(0,1.5,0.01, { "__blank", "move_forward", "__blank"})
+    ..button_row_space(0,2.5,0.01, { "move_left", "stand_still", "move_right"})
+    ..button_row_space(0,3.5,0.01, { "__blank", "move_backward", "__blank"})
+    ..button_row_space(3.5,1.5,0.01, {blank_space, "move_up" })
+    ..button_row_space(3.5,2.5,0.01, {"turn_anticlockwise", "stand_still","turn_clockwise" })
+    ..button_row_space(3.5,3.5,0.01, {blank_space, "move_down", })
+    ..button_row_space(0.225,5,0.01,{"loadblock_red", "loadblock_orange", "loadblock_yellow", "loadblock_green", "loadblock_grey", "loadblock_clear"})
+    ..button_row_space(0.225,6,0.01,{"loadblock_cyan", "loadblock_blue", "loadblock_pink", "loadblock_white", "loadblock_black","add_1"})
+    ..button_row_space(0.225,7,0.01,{"run_1", "run_2", "run_3", blank_space, "add_2", "add_4"})
+    ..button_row_space(0.225,8,0.01,{"run_4", "run_5", "run_6", blank_space, "add_8", "add_16"})
 
     -- for row, namelist in pairs(commands) do
     --     panel = panel .. button_row(0, row + 0.5, namelist)
@@ -148,9 +153,9 @@ local function panel_main(pos, mode)
             highlight(0, 1, 8, 4, "a", "a", "f")
     end
     return panel
-        .. highlight(0.5 + mode, 0, 1, 1, "a", "a", "f")
-        .. button(0.5, 0, "vbots_gui_commands.png", "commands")
-        .. button(1.5, 0, "vbots_location_inventory.png", "player_inv")
+        -- .. highlight(0.5 + mode, 0, 1, 1, "a", "a", "f")
+        -- .. button(0.5, 0, "vbots_gui_commands.png", "commands")
+        -- .. button(1.5, 0, "vbots_location_inventory.png", "player_inv")
 end
 
 local function draw_subroutines(pos, program)
@@ -158,11 +163,13 @@ local function draw_subroutines(pos, program)
     subroutines = subroutines .. "container[1,0]"
 
     -- highlight coding area in grey
-    subroutines = subroutines .. highlight(7, 1.5, 9, 7, "9", "9", "9")
+    subroutines = subroutines .. highlight(7, 1.5, 9, program, "9", "9", "f")
+    subroutines = subroutines .. highlight(7, 1.5+program+1,9, 6-program, "9", "9", "f")
     -- highlight selected program in pink
-    subroutines = subroutines .. highlight(7, 1.5 + program, 9, 1, "f", "a", "f")
+    subroutines = subroutines .. highlight(6, 1.5 + program, 10, 1, "f", "f", "f")
+    subroutines = subroutines .. string.format("image[%s,%s;1,1;vbots_selected.png]",6, 1.5 + program)
 
-
+    local prog_names = {"PROGRAM START", "PROGRAM A", "PROGRAM B", "PROGRAM C", "PROGRAM D", "PROGRAM E", "PROGRAM F"}
     for i = 0, 6 do
         -- program list
         subroutines = subroutines
@@ -170,7 +177,7 @@ local function draw_subroutines(pos, program)
 
         -- selector button for subroutine
         subroutines = subroutines
-            .. button(7, 1.5 + i, "vbots_program_" .. i .. ".png", "sub_" .. i)
+            .. button_tooltip(7, 1.5 + i, "vbots_program_" .. i .. ".png", prog_names[i+1], "sub_" .. i)
     end
     subroutines = subroutines .. "container_end[]"
     return subroutines
@@ -181,22 +188,23 @@ end
 -------------------------------------
 local function panel_code(pos, program)
     return
-        highlight(9, 0, 1, 1, "5", "5", "f")
-        .. highlight(14, 0, 1, 1, "5", "5", "f")
+        highlight(8, 0, 1, 1, "5", "5", "f")
+        -- .. highlight(14, 0, 1, 1, "5", "5", "f")
         .. highlight(11, 0, 2, 1, "5", "5", "f")
-        .. button(9, 0, "vbots_gui_run.png", "run", true)
+        .. button(8, 0, "vbots_gui_run.png", "run", true)
         --..button(11,0,"vbots_gui_check.png","check")
-        .. button(14, 0, "vbots_gui_nuke.png", "reset")
-        .. button(11, 0, "vbots_gui_load.png", "load", true)
-        .. button(12, 0, "vbots_gui_save.png", "save", true)
+        -- .. button(14, 0, "vbots_gui_nuke.png", "reset")
+        -- .. button(11, 0, "vbots_gui_load.png", "load", true)
+        -- .. button(12, 0, "vbots_gui_save.png", "save", true)
 
-        .. highlight(15, 0, 1, 1, "f", "0", "0")
-        .. button(15, 0, "vbots_gui_exit.png", "exit", true)
+        .. highlight(16, 0, 1, 1, "f", "0", "0")
+        .. button(16, 0, "vbots_gui_exit.png", "exit", true)
 
         -- trash can
-        .. highlight(6.5, 0, 2, 1, "0", "0", "0")
-        .. button(6.5, 0, "vbots_gui_trash.png", "trash")
-        .. padded_list("detached:bot_trash", "main", 7.5, 0, 1, 1)
+        .. highlight(11, 0, 2, 1, "0", "0", "0")
+        .. highlight(11, 0, 2, 1, "f", "f", "f")
+        .. button(11, 0, "vbots_gui_trash.png", "trash")
+        .. padded_list("detached:bot_trash", "main", 12, 0, 1, 1)
         --    .."list[detached:bottrash;main;7.5,0;1,1;]"
         --           .."listring[nodemeta:" .. pos .. ";p"..program.."]"
 

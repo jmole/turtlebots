@@ -44,6 +44,9 @@ register_command("loadblock_pink","Add a pink block to your queue", "vbots_loadb
 register_command("loadblock_clear","Remove all blocks from your queue", "vbots_loadblock_clear.png")
 
 
+register_command("selected","Load code into this program", "vbots_selected.png")
+
+
 register_command("add_1","plus one more time", "vbots_plus_1.png")
 register_command("add_2","plus two more times", "vbots_plus_2.png")
 register_command("add_4","plus four more times", "vbots_plus_4.png")
@@ -83,12 +86,12 @@ register_command("number_8","8","vbots_number_8.png")
 register_command("number_9","9","vbots_number_9.png")
 --register_command("number_0","0","vbots_number_0.png")
 
-register_command("run_1","Run sub-program 1","vbots_run_1.png")
-register_command("run_2","Run sub-program 2","vbots_run_2.png")
-register_command("run_3","Run sub-program 3","vbots_run_3.png")
-register_command("run_4","Run sub-program 4","vbots_run_4.png")
-register_command("run_5","Run sub-program 5","vbots_run_5.png")
-register_command("run_6","Run sub-program 6","vbots_run_6.png")
+register_command("run_1","START PROGRAM A","vbots_run_1.png")
+register_command("run_2","START PROGRAM B","vbots_run_2.png")
+register_command("run_3","START PROGRAM C","vbots_run_3.png")
+register_command("run_4","START PROGRAM D","vbots_run_4.png")
+register_command("run_5","START PROGRAM E","vbots_run_5.png")
+register_command("run_6","START PROGRAM F","vbots_run_6.png")
 
 
 
