@@ -4,11 +4,17 @@
 -- see licence.txt
 --$
 
+
 VBOTS={}
+VBOTS.prefix = "vbots"
 VBOTS.modpath = minetest.get_modpath("vbots")
 VBOTS.bot_info = {}
 dofile(VBOTS.modpath.."/stack.lua")
 VBOTS.PROGRAM_SIZE = 12
+
+VBOTS.vbots_on = "vbots:on"
+VBOTS.vbots_off = "vbots:off"
+
 
 minetest.create_detached_inventory("bot_commands", {
     allow_move = function(inv, from_list, from_index, to_list, to_index, count, player2)
@@ -49,7 +55,7 @@ local function bot_namer()
         "Turbo", "Giga", "Hyper", "Atomic", "Laser", "Jet", "Rocket", "Metal", "Power", "Circuit"
     }
     local last = {
-        "Buddy", "Pal", "Friend", "Eater", "Pooper", "Zoom", "Meow", "Snack", "Bot", "Flash"
+        "Buddy", "Pal", "Friend", "Eater", "Pooper", "Zoomer", "Meower", "Chomper", "Bot", "Breaker"
     }
     return first[math.random(#first)] .. " " .. last[math.random(#last)]
 end
@@ -220,12 +226,12 @@ end
 VBOTS.serialize_program = function(node_metadata)
     local inventory = node_metadata:get_inventory()
     local programs = {}
-    for i=0,6 do
+    for i=0,8 do
         local inventory_name = "p"..i
         programs[i] = {}
         local stack_in = Stack:new()
         local stack_out = Stack:new()
-        for j=1,8 do
+        for j=1,VBOTS.PROGRAM_SIZE do
             local code = inventory:get_stack(inventory_name, j):get_name()
             if code then
                 stack_in:push(code)
@@ -263,14 +269,14 @@ VBOTS.bot_togglestate = function(pos,mode)
     local timer = minetest.get_node_timer(pos)
     local newname
     if not mode then
-        if node.name == "vbots:off" then
+        if node.name == VBOTS.vbots_off then
             mode = "on"
-        elseif node.name == "vbots:on" then
+        elseif node.name == VBOTS.vbots_on then
             mode = "off"
         end
     end
     if mode == "on" then
-        newname = "vbots:on"
+        newname = VBOTS.vbots_on
         meta:set_int("steptime", 10)
         timer:start(1/meta:get_int("steptime"))
         meta:set_int("PC",0)
@@ -282,7 +288,7 @@ VBOTS.bot_togglestate = function(pos,mode)
         print( programs)
         meta:set_string("programs", programs)
     elseif mode == "off" then
-        newname = "vbots:off"
+        newname = VBOTS.vbots_off
         timer:stop()
         meta:set_int("PC",0)
         meta:set_int("PR",0)
@@ -300,3 +306,10 @@ dofile(VBOTS.modpath.."/formspec_handler.lua")
 dofile(VBOTS.modpath.."/register_bot.lua")
 dofile(VBOTS.modpath.."/register_commands.lua")
 dofile(VBOTS.modpath.."/register_joinleave.lua")
+
+-- override all items to have range = 10
+for name, def in pairs(minetest.registered_items) do
+    minetest.override_item(name, {
+        range = 10,
+    });
+end

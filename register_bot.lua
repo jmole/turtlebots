@@ -252,8 +252,8 @@ local function move_bot(pos,direction)
         newpos = {x = pos.x-dir.z, y = pos.y, z = pos.z+dir.x}
     end
     if newpos then
-        if not string.find(minetest.get_node(newpos).name, "vbots:on")
-           and not string.find(minetest.get_node(newpos).name, "vbots:off") then
+        if not string.find(minetest.get_node(newpos).name, VBOTS.vbots_on)
+           and not string.find(minetest.get_node(newpos).name, VBOTS.vbots_off) then
             if not minetest.is_protected(newpos, bot_owner) then
                 minetest.set_node(newpos,{name="air"})
             end
@@ -447,7 +447,7 @@ local function register_bot(node_name,node_desc,node_tiles,node_groups)
         after_place_node = function(pos, placer, itemstack, pointed_thing)
             VBOTS.bot_init(pos, placer)
             local facing = minetest.dir_to_facedir(placer:get_look_dir())
-            --facing = (facing)%4
+            facing = (facing+2)%4
             facebot(facing,pos)
         end,
         on_punch = function(pos, node, player, pointed_thing)
@@ -484,7 +484,7 @@ local function register_bot(node_name,node_desc,node_tiles,node_groups)
     })
 end
 
-register_bot("vbots:off", "Inactive Vbot", {
+register_bot(VBOTS.vbots_off, "Inactive Vbot", {
             "vbots_turtle_top.png",
             "vbots_turtle_bottom.png",
             "vbots_turtle_right.png",
@@ -498,7 +498,7 @@ register_bot("vbots:off", "Inactive Vbot", {
              oddly_breakable_by_hand = 1,
              }
 )
-register_bot("vbots:on", "Live Vbot", {
+register_bot(VBOTS.vbots_on, "Live Vbot", {
             "vbots_turtle_top4.png",
             "vbots_turtle_bottom.png",
             "vbots_turtle_right.png",
@@ -513,3 +513,13 @@ register_bot("vbots:on", "Live Vbot", {
              not_in_creative_inventory = 1,
              }
 )
+
+
+minetest.register_abm({
+    nodenames = {"default:brick"},
+    interval = 10,
+    chance = 1,
+    action = function(pos)
+        minetest.add_node(pos, {name="default:silver_sandstone"})
+    end,
+})

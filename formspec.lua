@@ -190,7 +190,6 @@ local function panel_code(pos, program)
     return
         highlight(8, 0, 1, 1, "5", "5", "f")
         -- .. highlight(14, 0, 1, 1, "5", "5", "f")
-        .. highlight(11, 0, 2, 1, "5", "5", "f")
         .. button(8, 0, "vbots_gui_run.png", "run", true)
         --..button(11,0,"vbots_gui_check.png","check")
         -- .. button(14, 0, "vbots_gui_nuke.png", "reset")
@@ -201,10 +200,11 @@ local function panel_code(pos, program)
         .. button(8+VBOTS.PROGRAM_SIZE, 0, "vbots_gui_exit.png", "exit", true)
 
         -- trash can
-        .. highlight(11, 0, 2, 1, "0", "0", "0")
-        .. highlight(11, 0, 2, 1, "f", "f", "f")
-        .. button(11, 0, "vbots_gui_trash.png", "trash")
-        .. padded_list("detached:bot_trash", "main", 12, 0, 1, 1)
+        .. highlight(8+VBOTS.PROGRAM_SIZE/2, 0, 2, 1, "5", "5", "f")
+        -- .. highlight(8+VBOTS.PROGRAM_SIZE/2, 0, 2, 1, "0", "0", "0")
+        -- .. highlight(8+VBOTS.PROGRAM_SIZE/2, 0, 2, 1, "f", "f", "f")
+        .. button(8+VBOTS.PROGRAM_SIZE/2, 0, "vbots_gui_trash.png", "trash")
+        .. padded_list("detached:bot_trash", "main", 9+VBOTS.PROGRAM_SIZE/2, 0, 1, 1)
         --    .."list[detached:bottrash;main;7.5,0;1,1;]"
         --           .."listring[nodemeta:" .. pos .. ";p"..program.."]"
 
