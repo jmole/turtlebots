@@ -1,3 +1,7 @@
+-- vbots v0.1
+-- (c) 2024 Jon Moeller
+--
+-- forked from:
 -- Visual Bots v0.3
 -- (c)2019 Nigel Garnett.
 --
