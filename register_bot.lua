@@ -1,27 +1,28 @@
-local function show_command(pos, command)
+-- Function to display a command particle above the bot
+local function show_command_sprite(pos, command)
     command = string.gsub(command, ":", "_")
     local particle = {
         pos = pos,
-        vel = {x=0.2,y=2,z=0.2},
+        velocity = {x=0.2, y=2, z=0.2},
         drag = 1,
         texture = command..".png",
         vertical = false,
         size = 4,
     }
-
-    print(particle.texture)
     particle.pos.y = particle.pos.y + 0.5
     minetest.add_particle(particle)
 end
 
+-- Function to push the current state onto the stack
 local function push_state(pos,a,b,c)
     local meta = minetest.get_meta(pos)
     local stack = meta:get_string("stack")
     local push = a..","..b..";"
     meta:set_string("stack", push..stack)
-    print(meta:get_string("stack"))
+    -- print(meta:get_string("stack"))
 end
 
+-- Function to pull the last state from the stack
 local function pull_state(pos)
     local meta = minetest.get_meta(pos)
     local stack = meta:get_string("stack")
@@ -36,23 +37,25 @@ local function pull_state(pos)
             meta:set_string("stack","")
         end
     end
-    print(meta:get_string("stack"))
+    -- print(meta:get_string("stack"))
 end
 
-
+-- Function to clear the block stack
 local function clear_block_stack(pos)
     local meta = minetest.get_meta(pos)
     meta:set_string("block_stack", "")
 end
 
+-- Function to add a block to the stack
 local function add_block_to_stack(pos, block)
     print("Addblock:"..block)
     local meta = minetest.get_meta(pos)
     local bs = meta:get_string("block_stack")
     meta:set_string("block_stack", bs..block..";")
-    print(meta:get_string("block_stack"))
+    -- print(meta:get_string("block_stack"))
 end
 
+-- Function to get a block from the stack
 local function get_block_from_stack(pos)
     local meta = minetest.get_meta(pos)
     local bs = meta:get_string("block_stack")
@@ -64,17 +67,14 @@ local function get_block_from_stack(pos)
         else
             meta:set_string("block_stack","")
         end
-        print(meta:get_string("block_stack"))
+        -- print(meta:get_string("block_stack"))
         return block
     end
-    print(meta:get_string("block_stack"))
+    -- print(meta:get_string("block_stack"))
     return nil
 end
 
-
--------------------------------------
--- callback from bot node can_dig
--------------------------------------
+-- Callback function to check if a player can interact with the bot
 local function interact(player,pos,isempty)
     local name = player:get_player_name()
     local meta = minetest.get_meta(pos)
@@ -86,10 +86,7 @@ local function interact(player,pos,isempty)
     return false
 end
 
-
--------------------------------------
--- Clean up bot table and bot storage
--------------------------------------
+-- Function to clean up the bot table and storage
 local function clean_bot_table()
     for bot_key,bot_data in pairs( VBOTS.bot_info) do
         local meta = minetest.get_meta(bot_data.pos)
@@ -98,30 +95,29 @@ local function clean_bot_table()
             VBOTS.bot_info[bot_key] = nil
         end
     end
-    --print("Cleaned")
-    --print(dump(VBOTS.bot_info))
 end
 
--------------------------------------
--- Bot Action Handlers
--------------------------------------
+-- Function to change the bot's facing direction
 local function facebot(facing,pos)
     local node = minetest.get_node(pos)
     minetest.swap_node(pos,{name=node.name, param2=facing})
 end
 
+-- Function to turn the bot clockwise
 local function bot_turn_clockwise(pos)
     local node = minetest.get_node(pos)
     local newface = (node.param2+1)%4
     facebot(newface,pos)
 end
 
+-- Function to turn the bot anticlockwise
 local function bot_turn_anticlockwise(pos)
     local node = minetest.get_node(pos)
     local newface = (node.param2-1)%4
     facebot(newface,pos)
 end
 
+-- Function to turn the bot in a random direction
 local function bot_turn_random(pos)
     if math.random(2)==1 then
         bot_turn_clockwise(pos)
@@ -130,9 +126,9 @@ local function bot_turn_random(pos)
     end
 end
 
+-- Function to check if a node is essentially empty (air-like)
 local function basically_empty(node)
-	def=minetest.registered_nodes[node.name]
-	--print(dump(def))
+	local def = minetest.registered_nodes[node.name]
 	if node.name == "air" or
 			def.drawtype=="airlike" or
 			def.groups.not_in_creative_inventory==1 or
@@ -143,6 +139,7 @@ local function basically_empty(node)
 	end
 end
 
+-- Function to move the bot to a new position
 local function position_bot(pos,newpos)
     local meta = minetest.get_meta(pos)
     local R = meta:get_int("steptime")
@@ -172,54 +169,18 @@ local function position_bot(pos,newpos)
     end
 end
 
+-- Function for the bot to build at a specific position
 local function bot_build(pos, buildpos)
-    local meta = minetest.get_meta(pos)
-    local inv = meta:get_inventory()
-    local bot_owner = meta:get_string("owner")
-    local node = minetest.get_node(pos)
-    local dir = minetest.facedir_to_dir(node.param2)
-    local withblock = meta:get("withblock")
-
     local block_type = get_block_from_stack(pos)
-    print(block_type)
-
-    local buildnode = minetest.get_node(buildpos)
+    -- print(block_type)
 
     if (block_type) then
         local block_name = "vbots:block_"..block_type
         minetest.set_node(buildpos,{name=block_name})
     end
-
-
-    if not minetest.is_protected(buildpos, bot_owner) and basically_empty(buildnode) then
-        local content = inv:get_list("main")
-        local a = 1
-        local found = nil
-        if content then
-            while( a<33 and not found) do
-				if withblock then
-					if content[a] and content[a]:get_name()==withblock and not content[a]:is_empty() and minetest.registered_nodes[content[a]:get_name()] then
-						found = content[a]:get_name()
-					end
-				else
-					if content[a] and not content[a]:is_empty() and minetest.registered_nodes[content[a]:get_name()] then
-						found = content[a]:get_name()
-					end
-				end
-                a=a+1
-            end
-            if found then
-                -- print(found)
-                local got = inv:remove_item("main",ItemStack(found))
-                if got:get_count() == 1 then
-                    minetest.set_node(buildpos,{name=found})
-                end
-            end
-        end
-    else
-        minetest.sound_play("system-fault",{pos = pos, gain = 10})
-    end
 end
+
+-- Function to move the bot in a specific direction
 local function move_bot(pos,direction)
     local meta = minetest.get_meta(pos)
     local bot_owner = meta:get_string("owner")
@@ -234,24 +195,21 @@ local function move_bot(pos,direction)
     local node = minetest.get_node(pos)
     local dir = minetest.facedir_to_dir(node.param2)
     local newpos
-    if direction == "u" then
+    if direction == "u" then -- upwards
         newpos = {x = pos.x, y = pos.y+1, z = pos.z}
-    elseif direction == "d" then
+    elseif direction == "d" then -- downwards
         newpos = {x = pos.x, y = pos.y-1, z = pos.z}
-    elseif direction == "f" then
-        print("forwards")
+    elseif direction == "f" then -- forwards
         newpos = {x = pos.x-dir.x, y = pos.y, z = pos.z-dir.z}
-    elseif direction == "b" then
-        print("backwards")
+    elseif direction == "b" then -- backwards
         newpos = {x = pos.x+dir.x, y = pos.y, z = pos.z+dir.z}
-    elseif direction == "l" then
-        print("left")
+    elseif direction == "l" then -- left
         newpos = {x = pos.x+dir.z, y = pos.y, z = pos.z-dir.x}
-    elseif direction == "r" then
-        print("right")
+    elseif direction == "r" then -- right
         newpos = {x = pos.x-dir.z, y = pos.y, z = pos.z+dir.x}
     end
     if newpos then
+        -- Check if the new position is not occupied by another bot
         if not string.find(minetest.get_node(newpos).name, VBOTS.vbots_on)
            and not string.find(minetest.get_node(newpos).name, VBOTS.vbots_off) then
             if not minetest.is_protected(newpos, bot_owner) then
@@ -262,55 +220,20 @@ local function move_bot(pos,direction)
             bot_build(newpos,pos)
         end
     end
+    -- Check if the player is close enough to the bot to be moved along with it
     if ppos then
         if math.abs(ppos.x-pos.x)<1.1 and
                 math.abs(ppos.z-pos.z)<1.1 and
                 math.abs(ppos.y-pos.y)<2 and
                 ppos.y>pos.y then
-            player:setpos({x=newpos.x, y=newpos.y+0.5, z=newpos.z })
+            player:set_pos({x=newpos.x, y=newpos.y+0.5, z=newpos.z })
         end
     end
 end
 
-local function bot_dig(pos,digy)
-    local meta = minetest.get_meta(pos)
-    local bot_owner = meta:get_string("owner")
-    local node = minetest.get_node(pos)
-    local dir = minetest.facedir_to_dir(node.param2)
-    local digpos
-    if digy == 0 then
-        digpos = {x = pos.x-dir.x, y = pos.y, z = pos.z-dir.z}
-    else
-        digpos = {x = pos.x, y = pos.y+digy, z = pos.z}
-    end
-    if not minetest.is_protected(digpos, bot_owner) then
-        local drop = minetest.get_node(digpos)
-        local node_definition = minetest.registered_nodes[drop.name]
-        local drops = minetest.get_node_drops(drop.name)
-        if node_definition.groups.not_in_creative_inventory~=1 then
-            local inv=minetest.get_inventory({
-                                    type="node",
-                                    pos=pos
-                                })
-            for _, itemname in ipairs(drops) do
-                local leftover = inv:add_item("main", ItemStack(itemname))
-                if not leftover then
-                    minetest.sound_play("system-fault",{pos = newpos, gain = 10})
-                    VBOTS.bot_togglestate(pos,"off")
-                end
-            end
-            minetest.set_node(digpos,{name="air"})
-            --minetest.dig_node(digpos)
-        end
-    else
-        minetest.sound_play("system-fault",{pos = newpos, gain = 10})
-    end
-end
-
+-- Function to parse and execute bot commands
 local function bot_parsecommand(pos,item)
     local meta = minetest.get_meta(pos)
-    local bot_owner = meta:get_string("owner")
-    print("parsecommand:"..item)
     if item == "vbots:move_forward" then
         move_bot(pos,"f")
     elseif item == "vbots:move_backward" then
@@ -326,7 +249,7 @@ local function bot_parsecommand(pos,item)
     elseif item == "vbots:move_home" then
         local newpos = minetest.deserialize(meta:get_string("home"))
         if newpos then
-            position_bot(pos,newpos,bot_owner)
+            position_bot(pos,newpos)
         end
     elseif item == "vbots:turn_clockwise" then
         bot_turn_clockwise(pos)
@@ -352,39 +275,19 @@ local function bot_parsecommand(pos,item)
         end
     end
 
-        -- Your code here
-    -- elseif item == "vbots:mode_dig" then
-    --     bot_dig(pos,0)
-    --     move_bot(pos,"f")
-    -- elseif item == "vbots:mode_dig_down" then
-    --     bot_dig(pos,-1)
-    --     move_bot(pos,"d")
-    -- elseif item == "vbots:mode_dig_up" then
-    --     bot_dig(pos,1)
-    --     move_bot(pos,"u")
-    -- elseif item == "vbots:mode_build" then
-    --     bot_build(pos,0)
-    -- elseif item == "vbots:mode_build_down" then
-    --     bot_build(pos,-1)
-    -- elseif item == "vbots:mode_build_up" then
-    --     bot_build(pos,1)
-    -- end
     local item_parts = string.split(item,"_")
     if item_parts[1]=="vbots:run" then
         local PC = meta:get_int("PC")
         local PR = meta:get_int("PR")
         local R = meta:get_int("repeat")
-        -- print("Pushing state...")
         push_state(pos,PC,PR,R)
         meta:set_int("PR", item_parts[2])
         meta:set_int("PC", 0)
         meta:set_int("repeat", 0)
---         print("after update PR:"..PR..
---           " PC:"..meta:get_int("PC")..
---           " R:"..meta:get_int("repeat"))
     end
 end
 
+-- Function to handle punching the bot
 local function punch_bot(pos,player)
     local meta = minetest.get_meta(pos)
     local bot_owner = meta:get_string("owner")
@@ -396,6 +299,7 @@ local function punch_bot(pos,player)
     end
 end
 
+-- Function to handle the bot's timer events
 local function bot_handletimer(pos)
     local meta = minetest.get_meta(pos)
     local PC = meta:get_int("PC")
@@ -412,8 +316,7 @@ local function bot_handletimer(pos)
     meta:set_string("stack",stack)
     if command ~= "return" then
         bot_parsecommand(pos, command)
-        show_command(pos,command)
-        print("ok...")
+        show_command_sprite(pos,command)
         return true
     else
         if PR ~=0 then
@@ -426,10 +329,7 @@ local function bot_handletimer(pos)
     end
 end
 
-
--------------------------------------
--- Bot definitions
--------------------------------------
+-- Function to register a bot node
 local function register_bot(node_name,node_desc,node_tiles,node_groups)
     minetest.register_node(node_name, {
         drawtype = "mesh",
@@ -484,6 +384,7 @@ local function register_bot(node_name,node_desc,node_tiles,node_groups)
     })
 end
 
+-- Register inactive bot node
 register_bot(VBOTS.vbots_off, "Inactive Vbot", {
             "vbots_turtle_top.png",
             "vbots_turtle_bottom.png",
@@ -498,6 +399,8 @@ register_bot(VBOTS.vbots_off, "Inactive Vbot", {
              oddly_breakable_by_hand = 1,
              }
 )
+
+-- Register active bot node
 register_bot(VBOTS.vbots_on, "Live Vbot", {
             "vbots_turtle_top4.png",
             "vbots_turtle_bottom.png",
@@ -513,13 +416,3 @@ register_bot(VBOTS.vbots_on, "Live Vbot", {
              not_in_creative_inventory = 1,
              }
 )
-
-
-minetest.register_abm({
-    nodenames = {"default:brick"},
-    interval = 10,
-    chance = 1,
-    action = function(pos)
-        minetest.add_node(pos, {name="default:silver_sandstone"})
-    end,
-})

@@ -1,3 +1,7 @@
+-------------------------------------
+-- COMMANDS
+-------------------------------------
+
 local register_command = function(itemname,description,image)
     minetest.register_craftitem("vbots:"..itemname, {
         description = description,
@@ -11,9 +15,6 @@ local register_command = function(itemname,description,image)
         on_drop = function(itemstack, dropper, pos)
             return nil
         end,
-        --on_use = function(itemstack, user, pointed_thing)
-        --    return nil
-        --end
     })
 end
 
@@ -23,7 +24,6 @@ register_command("move_up","Move bot up","vbots_move_up.png")
 register_command("move_down","Move bot down","vbots_move_down.png")
 register_command("move_left","Move bot left","vbots_move_left.png")
 register_command("move_right","Move bot right","vbots_move_right.png")
-register_command("move_home","Move bot to start position","vbots_move_home.png")
 register_command("stand_still","Do Nothing","vbots_stand_still.png")
 
 register_command("turn_clockwise","Turn bot 90° clockwise","vbots_turn_clockwise.png")
@@ -44,47 +44,11 @@ register_command("loadblock_pink","Add a pink block to your queue", "vbots_loadb
 register_command("loadblock_clear","Remove all blocks from your queue", "vbots_loadblock_clear.png")
 
 
-register_command("selected","Load code into this program", "vbots_selected.png")
-
-
 register_command("add_1","plus one more time", "vbots_plus_1.png")
 register_command("add_2","plus two more times", "vbots_plus_2.png")
 register_command("add_4","plus four more times", "vbots_plus_4.png")
 register_command("add_8","plus eight more times", "vbots_plus_8.png")
 register_command("add_16","plus sixteen more times", "vbots_plus_16.png")
-
-
--- register_command("case_end","End section","vbots_case_end.png")
--- register_command("case_failure","Last action failed","vbots_case_failure.png")
--- register_command("case_success","Last action succeeded","vbots_case_success.png")
--- register_command("case_yes","Yes","vbots_case_yes.png")
--- register_command("case_no","No","vbots_case_no.png")
--- register_command("case_test","Test","vbots_case_test.png")
--- register_command("case_repeat","Repeat","vbots_case_repeat.png")
-
-register_command("mode_build","Place a block behind the bot","vbots_mode_build.png")
-register_command("mode_build_up","Place a block above the block behind the bot","vbots_mode_build_up.png")
-register_command("mode_build_down","Place a block below the block behind the bot","vbots_mode_build_down.png")
-
-register_command("mode_speed","set bot speed","vbots_mode_speed.png")
-register_command("mode_dig","Dig the block in front","vbots_mode_dig.png")
-register_command("mode_dig_up","Dig the block above the block in front","vbots_mode_dig_up.png")
-register_command("mode_dig_down","Dig the block below the block in front","vbots_mode_dig_down.png")
-
--- register_command("mode_examine","Examine the block in the direction of the next command","vbots_mode_examine.png")
--- register_command("mode_pause","Wait for a few seconds","vbots_mode_pause.png")
--- register_command("mode_wait","Wait until next event","vbots_mode_wait.png")
-
---register_command("number_1","1","vbots_number_1.png")
-register_command("number_2","2","vbots_number_2.png")
-register_command("number_3","3","vbots_number_3.png")
-register_command("number_4","4","vbots_number_4.png")
-register_command("number_5","5","vbots_number_5.png")
-register_command("number_6","6","vbots_number_6.png")
-register_command("number_7","7","vbots_number_7.png")
-register_command("number_8","8","vbots_number_8.png")
-register_command("number_9","9","vbots_number_9.png")
---register_command("number_0","0","vbots_number_0.png")
 
 register_command("run_1","START PROGRAM A","vbots_run_1.png")
 register_command("run_2","START PROGRAM B","vbots_run_2.png")
@@ -96,7 +60,9 @@ register_command("run_7","START PROGRAM G","vbots_run_7.png")
 register_command("run_8","START PROGRAM H","vbots_run_8.png")
 
 
-
+-------------------------------------
+-- COLORED BLOCKS
+-------------------------------------
 
 local function create_block(color)
     minetest.register_node(VBOTS.get_block_name(color), {

@@ -1,5 +1,4 @@
 Stack = {}
- 
 
 function Stack:new()
     -- create a new stack

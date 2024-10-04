@@ -24,7 +24,6 @@ local function padded_list_of_size(inventory, list, x, y, w, h, numx, numy, padd
     local list_string =
         string.format("style_type[list;size=%s,%s;spacing=%s]", w, h, spacing) ..
         string.format("list[%s;%s;%s,%s;%s,%s]", inventory, list, x, y, numx, numy)
-    -- print(list_string)
     return list_string
 end
 
@@ -55,9 +54,6 @@ local function item_image_button_padding(x,y,w,h,padding,name)
     return string.format("item_image_button[%s,%s;%s,%s;%s;%s;%s]", x, y, w, h, "vbots:"..name, name, "")
 end
 
-local function item_image_button(x,y,w,h,name)
-    return item_image_button_padding(x,y,w,h,0,name)
-end
 local function image_button_tooltip(x, y, w, h, image, name, tooltip)
     return _image_button(x, y, w, h, image, name, tooltip, "")
 end
@@ -83,7 +79,6 @@ local function cbutton(x, y, padding, name)
     if name == blank_space then
         return ""
     end
-    --return image_button(x, y, 1, 1, "vbots_" .. name .. ".png", name)
     return item_image_button_padding(x, y, 1, 1, padding, name)
 end
 
@@ -96,33 +91,12 @@ local function button_row_space(x, y, padding, nametable )
     return row
 end
 
-local function button_row(x, y, nametable)
-    return button_row_space(x,y,0,nametable)
-end
-
 -------------------------------------
 -- Main panel generators
 -------------------------------------
 local function panel_commands()
-    local commands = {
-        { "__blank", "move_forward", "__blank"},--,blank_space,blank_space, "move_up" },
-        { "move_left",   "stand_still",      "move_right"},--, blank_space,"turn_anticlockwise", "stand_still","turn_clockwise" },
-        { "__blank",    "move_backward",  "__blank" },--,blank_space, blank_space, "move_down", },
-        --{"case_repeat","case_test","case_end","case_success","case_failure","case_yes","case_no" },
-        --{"mode_examine","mode_pause","mode_wait"},
-        -- { "number_2",       "number_3",           "number_4",       "number_5",  blank_space, "mode_speed" },
-        -- { "number_6",       "number_7",           "number_8",       "number_9" },
-        {""},
-        {blank_space, "move_up" },
-        {"turn_anticlockwise", "stand_still","turn_clockwise" },
-        {blank_space, "move_down", },
-        { "run_1",          "run_2",              "run_3",          "run_4",     "run_5",     "run_6" }
-    }
-    local panel = highlight(0, 1.5, 7, 9, "f", "f", "f")
-    -- ..highlight(0, 5, 7, 4.5, "9", "9", "f")
-    .. "container[0.25,0.25]"
-
-    panel = panel
+    return highlight(0, 1.5, 7, 9, "f", "f", "f")
+    .."container[0.25,0.25]"
     ..button_row_space(0,1.5,0.01, { "__blank", "move_forward", "__blank"})
     ..button_row_space(0,2.5,0.01, { "move_left", "stand_still", "move_right"})
     ..button_row_space(0,3.5,0.01, { "__blank", "move_backward", "__blank"})
@@ -133,12 +107,7 @@ local function panel_commands()
     ..button_row_space(0.225,6.5,0.01,{"loadblock_cyan", "loadblock_blue", "loadblock_pink", "loadblock_white", "loadblock_black","add_1"})
     ..button_row_space(0.225,7.5,0.01,{"run_1", "run_2", "run_3", "run_4", "add_2", "add_4"})
     ..button_row_space(0.225,8.5,0.01,{"run_5", "run_6", "run_7", "run_8", "add_8", "add_16"})
-
-    -- for row, namelist in pairs(commands) do
-    --     panel = panel .. button_row(0, row + 0.5, namelist)
-    -- end
-    panel = panel .. "container_end[]"
-    return panel
+    .. "container_end[]"
 end
 
 local function panel_main(pos, mode)
@@ -153,9 +122,6 @@ local function panel_main(pos, mode)
             highlight(0, 1, 8, 4, "a", "a", "f")
     end
     return panel
-        -- .. highlight(0.5 + mode, 0, 1, 1, "a", "a", "f")
-        -- .. button(0.5, 0, "vbots_gui_commands.png", "commands")
-        -- .. button(1.5, 0, "vbots_location_inventory.png", "player_inv")
 end
 
 local function draw_subroutines(pos, program)
@@ -188,26 +154,17 @@ end
 -------------------------------------
 local function panel_code(pos, program)
     return
+        -- run button
         highlight(8, 0, 1, 1, "5", "5", "f")
-        -- .. highlight(14, 0, 1, 1, "5", "5", "f")
         .. button(8, 0, "vbots_gui_run.png", "run", true)
-        --..button(11,0,"vbots_gui_check.png","check")
-        -- .. button(14, 0, "vbots_gui_nuke.png", "reset")
-        -- .. button(11, 0, "vbots_gui_load.png", "load", true)
-        -- .. button(12, 0, "vbots_gui_save.png", "save", true)
-
+        -- exit button
         .. highlight(8+VBOTS.PROGRAM_SIZE, 0, 1, 1, "f", "0", "0")
         .. button(8+VBOTS.PROGRAM_SIZE, 0, "vbots_gui_exit.png", "exit", true)
-
         -- trash can
         .. highlight(8+VBOTS.PROGRAM_SIZE/2, 0, 2, 1, "5", "5", "f")
-        -- .. highlight(8+VBOTS.PROGRAM_SIZE/2, 0, 2, 1, "0", "0", "0")
-        -- .. highlight(8+VBOTS.PROGRAM_SIZE/2, 0, 2, 1, "f", "f", "f")
         .. button(8+VBOTS.PROGRAM_SIZE/2, 0, "vbots_gui_trash.png", "trash")
         .. padded_list("detached:bot_trash", "main", 9+VBOTS.PROGRAM_SIZE/2, 0, 1, 1)
-        --    .."list[detached:bottrash;main;7.5,0;1,1;]"
-        --           .."listring[nodemeta:" .. pos .. ";p"..program.."]"
-
+        -- subroutines
         .. draw_subroutines(pos, program)
 end
 
@@ -218,15 +175,10 @@ end
 -- Formspec generator
 -------------------------------------
 local function get_formspec(pos, meta)
-    local bot_key = meta:get_string("key")
-    local bot_owner = meta:get_string("owner")
     local bot_name = meta:get_string("name")
     local bot_pos = pos.x .. "," .. pos.y .. "," .. pos.z
     local fs_panel = meta:get_int("panel")
     local fs_program = meta:get_int("program")
-    --print(dump(meta:to_table().fields))
-    --print("Panel:"..fs_panel)
-    --print("Program:"..fs_program)
     local formspec = "formspec_version[7]"
         .. string.format("size[%s,11]",9.5+VBOTS.PROGRAM_SIZE)
         .. "container[0.25,0.25]"

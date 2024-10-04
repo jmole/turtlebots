@@ -1,4 +1,4 @@
-globals = { "VBOTS" }
+globals = { "VBOTS", "Stack" }
 read_globals = {
     "DIR_DELIM", "INIT",
 

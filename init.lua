@@ -1,4 +1,4 @@
--- vbots v0.1
+-- vbots v1.0
 -- (c) 2024 Jon Moeller
 --
 -- forked from:
@@ -18,6 +18,15 @@ VBOTS.PROGRAM_SIZE = 12
 
 VBOTS.vbots_on = "vbots:on"
 VBOTS.vbots_off = "vbots:off"
+
+VBOTS.debug = true
+
+local debug = function(object)
+    if VBOTS.debug == true and object ~= nil then
+        print(tostring(object))
+        minetest.chat_send_all(tostring(object))
+    end
+end
 
 
 minetest.create_detached_inventory("bot_commands", {
@@ -84,7 +93,6 @@ VBOTS.bot_restore = function(pos)
     if not VBOTS.bot_info[bot_key] then
         VBOTS.bot_info[bot_key] = { owner = bot_owner, pos = pos, name = bot_name}
         meta:set_string("infotext", bot_name .. " (" .. bot_owner .. ")")
-        --print(dump(VBOTS.bot_info))
     end
 end
 
@@ -227,6 +235,9 @@ VBOTS.get_block_texture = function(color)
     return "vbots_block_"..color..".png"
 end
 
+-------------------------------------
+-- Serialize the program from the node metadata
+-------------------------------------
 VBOTS.serialize_program = function(node_metadata)
     local inventory = node_metadata:get_inventory()
     local programs = {}
@@ -257,12 +268,12 @@ VBOTS.serialize_program = function(node_metadata)
 
         local j = 0
         for code in stack_out:iterator() do
-            print(tostring(i)..":"..tostring(j)..":"..code)
+            debug(tostring(i)..":"..tostring(j)..":"..code)
             programs[i][j] = code
             j = j + 1
         end
     end
-    print(programs)
+    debug(programs)
     return programs
 end
 
@@ -288,8 +299,8 @@ VBOTS.bot_togglestate = function(pos,mode)
         meta:set_string("stack","")
         meta:set_string("home",minetest.serialize(pos))
         local programs = minetest.serialize(VBOTS.serialize_program(meta))
-        print("Serialized: ")
-        print( programs)
+        debug("Serialized: ")
+        debug( programs)
         meta:set_string("programs", programs)
     elseif mode == "off" then
         newname = VBOTS.vbots_off
@@ -298,7 +309,7 @@ VBOTS.bot_togglestate = function(pos,mode)
         meta:set_int("PR",0)
         meta:set_string("stack","")
     end
-    --print(node.name.." "..newname)
+    debug(node.name.." "..newname)
     if newname then
         minetest.swap_node(pos,{name=newname, param2=node.param2})
     end
