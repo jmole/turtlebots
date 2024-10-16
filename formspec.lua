@@ -51,7 +51,7 @@ local function item_image_button_padding(x,y,w,h,padding,name)
     y = y + padding
     w = w - padding * 2
     h = h - padding * 2
-    return string.format("item_image_button[%s,%s;%s,%s;%s;%s;%s]", x, y, w, h, "vbots:"..name, name, "")
+    return string.format("item_image_button[%s,%s;%s,%s;%s;%s;%s]", x, y, w, h, "turtlebots:"..name, name, "")
 end
 
 local function image_button_tooltip(x, y, w, h, image, name, tooltip)
@@ -129,21 +129,21 @@ local function draw_subroutines(pos, program)
     subroutines = subroutines .. "container[1,0]"
 
     -- highlight coding area in grey
-    subroutines = subroutines .. highlight(7, 1.5, VBOTS.PROGRAM_SIZE+1, program, "9", "9", "f")
-    subroutines = subroutines .. highlight(7, 1.5+program+1,VBOTS.PROGRAM_SIZE+1, 8-program, "9", "9", "f")
+    subroutines = subroutines .. highlight(7, 1.5, TURTLEBOTS.PROGRAM_SIZE+1, program, "9", "9", "f")
+    subroutines = subroutines .. highlight(7, 1.5+program+1,TURTLEBOTS.PROGRAM_SIZE+1, 8-program, "9", "9", "f")
     -- highlight selected program in pink
-    subroutines = subroutines .. highlight(6, 1.5 + program, VBOTS.PROGRAM_SIZE+2, 1, "f", "f", "f")
-    subroutines = subroutines .. string.format("image[%s,%s;1,1;vbots_selected.png]",6, 1.5 + program)
+    subroutines = subroutines .. highlight(6, 1.5 + program, TURTLEBOTS.PROGRAM_SIZE+2, 1, "f", "f", "f")
+    subroutines = subroutines .. string.format("image[%s,%s;1,1;turtlebots_selected.png]",6, 1.5 + program)
 
     local prog_names = {"PROGRAM START", "PROGRAM A", "PROGRAM B", "PROGRAM C", "PROGRAM D", "PROGRAM E", "PROGRAM F", "PROGRAM G", "PROGRAM H"}
     for i = 0, 8 do
         -- program list
         subroutines = subroutines
-            .. padded_list("nodemeta:" .. pos, "p" .. i, 8, i + 1.5, VBOTS.PROGRAM_SIZE, 1)
+            .. padded_list("nodemeta:" .. pos, "p" .. i, 8, i + 1.5, TURTLEBOTS.PROGRAM_SIZE, 1)
 
         -- selector button for subroutine
         subroutines = subroutines
-            .. button_tooltip(7, 1.5 + i, "vbots_program_" .. i .. ".png", prog_names[i+1], "sub_" .. i)
+            .. button_tooltip(7, 1.5 + i, "turtlebots_program_" .. i .. ".png", prog_names[i+1], "sub_" .. i)
     end
     subroutines = subroutines .. "container_end[]"
     return subroutines
@@ -156,14 +156,14 @@ local function panel_code(pos, program)
     return
         -- run button
         highlight(8, 0, 1, 1, "5", "5", "f")
-        .. button(8, 0, "vbots_gui_run.png", "run", true)
+        .. button(8, 0, "turtlebots_gui_run.png", "run", true)
         -- exit button
-        .. highlight(8+VBOTS.PROGRAM_SIZE, 0, 1, 1, "f", "0", "0")
-        .. button(8+VBOTS.PROGRAM_SIZE, 0, "vbots_gui_exit.png", "exit", true)
+        .. highlight(8+TURTLEBOTS.PROGRAM_SIZE, 0, 1, 1, "f", "0", "0")
+        .. button(8+TURTLEBOTS.PROGRAM_SIZE, 0, "turtlebots_gui_exit.png", "exit", true)
         -- trash can
-        .. highlight(8+VBOTS.PROGRAM_SIZE/2, 0, 2, 1, "5", "5", "f")
-        .. button(8+VBOTS.PROGRAM_SIZE/2, 0, "vbots_gui_trash.png", "trash")
-        .. padded_list("detached:bot_trash", "main", 9+VBOTS.PROGRAM_SIZE/2, 0, 1, 1)
+        .. highlight(8+TURTLEBOTS.PROGRAM_SIZE/2, 0, 2, 1, "5", "5", "f")
+        .. button(8+TURTLEBOTS.PROGRAM_SIZE/2, 0, "turtlebots_gui_trash.png", "trash")
+        .. padded_list("detached:bot_trash", "main", 9+TURTLEBOTS.PROGRAM_SIZE/2, 0, 1, 1)
         -- subroutines
         .. draw_subroutines(pos, program)
 end
@@ -180,7 +180,7 @@ local function get_formspec(pos, meta)
     local fs_panel = meta:get_int("panel")
     local fs_program = meta:get_int("program")
     local formspec = "formspec_version[7]"
-        .. string.format("size[%s,11]",9.5+VBOTS.PROGRAM_SIZE)
+        .. string.format("size[%s,11]",9.5+TURTLEBOTS.PROGRAM_SIZE)
         .. "container[0.25,0.25]"
         .. maketext(3, 0.25, bot_name, "big")
         .. panel_main(bot_pos, fs_panel)
@@ -194,7 +194,7 @@ end
 -------------------------------------
 -- callback from bot node on_rightclick
 -------------------------------------
-function VBOTS.show_formspec(clicker, pos)
+function TURTLEBOTS.show_formspec(clicker, pos)
     local meta = minetest.get_meta(pos)
     local bot_key = meta:get_string("key")
     minetest.show_formspec(clicker:get_player_name(),

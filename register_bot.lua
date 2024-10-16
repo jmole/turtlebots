@@ -88,11 +88,11 @@ end
 
 -- Function to clean up the bot table and storage
 local function clean_bot_table()
-    for bot_key,bot_data in pairs( VBOTS.bot_info) do
+    for bot_key,bot_data in pairs( TURTLEBOTS.bot_info) do
         local meta = minetest.get_meta(bot_data.pos)
         local bot_name = meta:get_string("name")
         if bot_name=="" then
-            VBOTS.bot_info[bot_key] = nil
+            TURTLEBOTS.bot_info[bot_key] = nil
         end
     end
 end
@@ -175,7 +175,7 @@ local function bot_build(pos, buildpos)
     -- print(block_type)
 
     if (block_type) then
-        local block_name = "vbots:block_"..block_type
+        local block_name = "turtlebots:block_"..block_type
         minetest.set_node(buildpos,{name=block_name})
     end
 end
@@ -210,8 +210,8 @@ local function move_bot(pos,direction)
     end
     if newpos then
         -- Check if the new position is not occupied by another bot
-        if not string.find(minetest.get_node(newpos).name, VBOTS.vbots_on)
-           and not string.find(minetest.get_node(newpos).name, VBOTS.vbots_off) then
+        if not string.find(minetest.get_node(newpos).name, TURTLEBOTS.turtlebots_on)
+           and not string.find(minetest.get_node(newpos).name, TURTLEBOTS.turtlebots_off) then
             if not minetest.is_protected(newpos, bot_owner) then
                 minetest.set_node(newpos,{name="air"})
             end
@@ -234,30 +234,30 @@ end
 -- Function to parse and execute bot commands
 local function bot_parsecommand(pos,item)
     local meta = minetest.get_meta(pos)
-    if item == "vbots:move_forward" then
+    if item == "turtlebots:move_forward" then
         move_bot(pos,"f")
-    elseif item == "vbots:move_backward" then
+    elseif item == "turtlebots:move_backward" then
         move_bot(pos,"b")
-    elseif item == "vbots:move_up" then
+    elseif item == "turtlebots:move_up" then
         move_bot(pos,"u")
-    elseif item == "vbots:move_down" then
+    elseif item == "turtlebots:move_down" then
         move_bot(pos,"d")
-    elseif item == "vbots:move_left" then
+    elseif item == "turtlebots:move_left" then
         move_bot(pos,"l")
-    elseif item == "vbots:move_right" then
+    elseif item == "turtlebots:move_right" then
         move_bot(pos,"r")
-    elseif item == "vbots:move_home" then
+    elseif item == "turtlebots:move_home" then
         local newpos = minetest.deserialize(meta:get_string("home"))
         if newpos then
             position_bot(pos,newpos)
         end
-    elseif item == "vbots:turn_clockwise" then
+    elseif item == "turtlebots:turn_clockwise" then
         bot_turn_clockwise(pos)
-    elseif item == "vbots:turn_anticlockwise" then
+    elseif item == "turtlebots:turn_anticlockwise" then
         bot_turn_anticlockwise(pos)
-    elseif item == "vbots:turn_random" then
+    elseif item == "turtlebots:turn_random" then
         bot_turn_random(pos)
-    elseif item == "vbots:mode_speed" then
+    elseif item == "turtlebots:mode_speed" then
         local R = meta:get_int("repeat")
         if R > 1 then
             meta:set_int("repeat",0)
@@ -265,7 +265,7 @@ local function bot_parsecommand(pos,item)
         else
             meta:set_int("steptime",1)
         end
-    elseif string.find(item, "vbots:loadblock_") then
+    elseif string.find(item, "turtlebots:loadblock_") then
         local item_parts = string.split(item,"_")
         local block_action = item_parts[2]
         if (block_action == "clear") then
@@ -276,7 +276,7 @@ local function bot_parsecommand(pos,item)
     end
 
     local item_parts = string.split(item,"_")
-    if item_parts[1]=="vbots:run" then
+    if item_parts[1]=="turtlebots:run" then
         local PC = meta:get_int("PC")
         local PR = meta:get_int("PR")
         local R = meta:get_int("repeat")
@@ -294,7 +294,7 @@ local function punch_bot(pos,player)
     if bot_owner == player:get_player_name() then
         local item = player:get_wielded_item():get_name()
         if item == "" then
-            VBOTS.bot_togglestate(pos)
+            TURTLEBOTS.bot_togglestate(pos)
         end
     end
 end
@@ -323,7 +323,7 @@ local function bot_handletimer(pos)
             pull_state(pos)
             return true
         else
-            VBOTS.bot_togglestate(pos)
+            TURTLEBOTS.bot_togglestate(pos)
             return false
         end
     end
@@ -345,7 +345,7 @@ local function register_bot(node_name,node_desc,node_tiles,node_groups)
         light_source = 14,
         on_blast = function() end,
         after_place_node = function(pos, placer, itemstack, pointed_thing)
-            VBOTS.bot_init(pos, placer)
+            TURTLEBOTS.bot_init(pos, placer)
             local facing = minetest.dir_to_facedir(placer:get_look_dir())
             facing = (facing+2)%4
             facebot(facing,pos)
@@ -359,8 +359,8 @@ local function register_bot(node_name,node_desc,node_tiles,node_groups)
                 return 0
             end
             if interact(clicker,pos) then
-                VBOTS.bot_restore(pos)
-                minetest.after(0, VBOTS.show_formspec, clicker, pos)
+                TURTLEBOTS.bot_restore(pos)
+                minetest.after(0, TURTLEBOTS.show_formspec, clicker, pos)
             end
         end,
         on_timer = function(pos, elapsed)
@@ -378,20 +378,20 @@ local function register_bot(node_name,node_desc,node_tiles,node_groups)
         on_destruct = function(pos)
             local meta = minetest.get_meta(pos)
             local bot_key = meta:get_string("key")
-            VBOTS.bot_info[bot_key] = nil
+            TURTLEBOTS.bot_info[bot_key] = nil
             clean_bot_table()
         end
     })
 end
 
 -- Register inactive bot node
-register_bot(VBOTS.vbots_off, "Inactive Vbot", {
-            "vbots_turtle_top.png",
-            "vbots_turtle_bottom.png",
-            "vbots_turtle_right.png",
-            "vbots_turtle_left.png",
-            "vbots_turtle_tail.png",
-            "vbots_turtle_face.png",
+register_bot(TURTLEBOTS.turtlebots_off, "Inactive Vbot", {
+            "turtlebots_turtle_top.png",
+            "turtlebots_turtle_bottom.png",
+            "turtlebots_turtle_right.png",
+            "turtlebots_turtle_left.png",
+            "turtlebots_turtle_tail.png",
+            "turtlebots_turtle_face.png",
             },
             {cracky = 1,
              snappy = 1,
@@ -401,13 +401,13 @@ register_bot(VBOTS.vbots_off, "Inactive Vbot", {
 )
 
 -- Register active bot node
-register_bot(VBOTS.vbots_on, "Live Vbot", {
-            "vbots_turtle_top4.png",
-            "vbots_turtle_bottom.png",
-            "vbots_turtle_right.png",
-            "vbots_turtle_left.png",
-            "vbots_turtle_tail.png",
-            "vbots_turtle_face.png",
+register_bot(TURTLEBOTS.turtlebots_on, "Live Vbot", {
+            "turtlebots_turtle_top4.png",
+            "turtlebots_turtle_bottom.png",
+            "turtlebots_turtle_right.png",
+            "turtlebots_turtle_left.png",
+            "turtlebots_turtle_tail.png",
+            "turtlebots_turtle_face.png",
             },
             {cracky = 1,
              snappy = 1,

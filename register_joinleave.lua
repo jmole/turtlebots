@@ -1,7 +1,7 @@
 
 minetest.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
-    for bot_key,bot_data in pairs( VBOTS.bot_info) do
+    for bot_key,bot_data in pairs( TURTLEBOTS.bot_info) do
         local owner_present = minetest.get_player_by_name(bot_data.owner)
         if bot_data.owner == name  or not owner_present then
             local meta = minetest.get_meta(bot_data.pos)
@@ -10,13 +10,13 @@ minetest.register_on_leaveplayer(function(player)
                 meta:set_string("infotext", bot_name .. " (" ..
                                             bot_data.owner .. ") [Inactive]")
             end
-            VBOTS.bot_info[bot_key] = nil
+            TURTLEBOTS.bot_info[bot_key] = nil
         end
     end
-    --print(dump(VBOTS.bot_info))
+    --print(dump(TURTLEBOTS.bot_info))
 end)
 
 minetest.register_on_joinplayer(function(player)
-    --print(dump(VBOTS.bot_info))
+    --print(dump(TURTLEBOTS.bot_info))
 end)
 

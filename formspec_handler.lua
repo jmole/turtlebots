@@ -5,16 +5,16 @@ local mod_storage = minetest.get_mod_storage()
 -- generate new key & move data in table
 -------------------------------------
 local function bot_rekey(bot_key,meta)
-    local new_key = VBOTS.get_key()
-    VBOTS.bot_info[new_key] = VBOTS.bot_info[bot_key]
-    VBOTS.bot_info[bot_key] = nil
+    local new_key = TURTLEBOTS.get_key()
+    TURTLEBOTS.bot_info[new_key] = TURTLEBOTS.bot_info[bot_key]
+    TURTLEBOTS.bot_info[bot_key] = nil
     meta:set_string("key", new_key)
     return new_key
 end
 
 minetest.register_on_player_receive_fields(function(player, bot_key, fields)
     --print(dump( fields))
-    local bot_data = VBOTS.bot_info[bot_key]
+    local bot_data = TURTLEBOTS.bot_info[bot_key]
     -- Bot main formspec
     if bot_data then
         -- print("Main Bot formspec received:")
@@ -25,16 +25,16 @@ minetest.register_on_player_receive_fields(function(player, bot_key, fields)
         if bot_key == meta_bot_key then
             bot_key = bot_rekey(bot_key,meta)
             if fields.run then
-                minetest.after(0, VBOTS.bot_togglestate, bot_data.pos, "on")
+                minetest.after(0, TURTLEBOTS.bot_togglestate, bot_data.pos, "on")
             end
             if fields.save then
-                VBOTS.save(bot_data.pos)
+                TURTLEBOTS.save(bot_data.pos)
             end
             if fields.load then
-                VBOTS.load(bot_data.pos,player)
+                TURTLEBOTS.load(bot_data.pos,player)
             end
             if fields.reset then
-                VBOTS.wipe_programs(bot_data.pos)
+                TURTLEBOTS.wipe_programs(bot_data.pos)
             end
             if fields.quit=="true" then
                 return
@@ -48,7 +48,7 @@ minetest.register_on_player_receive_fields(function(player, bot_key, fields)
             if fields.trash then
                 local last = 0
                 local content = inv:get_list("p"..meta:get_int("program"))
-                for a = 1,VBOTS.PROGRAM_SIZE do
+                for a = 1,TURTLEBOTS.PROGRAM_SIZE do
                     if not content[a]:is_empty() then last=a end
                 end
                 if last>0 then
@@ -71,11 +71,11 @@ minetest.register_on_player_receive_fields(function(player, bot_key, fields)
                                 nametable[1]=="loadblock" or
                                 nametable[1]=="run" then
                             --print("COMMAND!!!!!!!")
-                            local leftover = inv:add_item("p"..meta:get_int("program"), ItemStack("vbots:"..f))
+                            local leftover = inv:add_item("p"..meta:get_int("program"), ItemStack("turtlebots:"..f))
                         end
                     end
                 end
-                minetest.after(0, VBOTS.show_formspec, player, bot_data.pos)
+                minetest.after(0, TURTLEBOTS.show_formspec, player, bot_data.pos)
             end
         end
     else
@@ -87,17 +87,17 @@ minetest.register_on_player_receive_fields(function(player, bot_key, fields)
         end
         if #form_parts == 2 and form_parts[1] == "loadbot" then
             -- print("Load Bot formspec received")
-            local bot_data = VBOTS.bot_info[form_parts[2]]
+            local bot_data = TURTLEBOTS.bot_info[form_parts[2]]
             local pos=bot_data.pos
             local meta = minetest.get_meta(pos)
             local inv = meta:get_inventory()
 
             minetest.close_formspec(player:get_player_name(), bot_key)
             if fields.delete then
-                VBOTS.load(pos,player,"delete")
+                TURTLEBOTS.load(pos,player,"delete")
             end
             if fields.rename then
-                VBOTS.load(pos,player,"rename")
+                TURTLEBOTS.load(pos,player,"rename")
             end
             if fields.saved then
                 local bot_name = bot_list[tonumber(string.split(fields.saved,":")[2])]
@@ -138,7 +138,7 @@ minetest.register_on_player_receive_fields(function(player, bot_key, fields)
             end
         elseif #form_parts == 2 and form_parts[1] == "delete" then
             -- print("Delete Bot formspec received")
-            local bot_data = VBOTS.bot_info[form_parts[2]]
+            local bot_data = TURTLEBOTS.bot_info[form_parts[2]]
             local pos=bot_data.pos
             minetest.close_formspec(player:get_player_name(), bot_key)
             if fields.saved then
@@ -149,35 +149,35 @@ minetest.register_on_player_receive_fields(function(player, bot_key, fields)
             end
         elseif #form_parts == 2 and form_parts[1] == "rename" then
             -- print("Rename Bot formspec received")
-            local bot_data = VBOTS.bot_info[form_parts[2]]
+            local bot_data = TURTLEBOTS.bot_info[form_parts[2]]
             local pos=bot_data.pos
             minetest.close_formspec(player:get_player_name(), bot_key)
             if fields.saved then
                 local bot_name = bot_list[tonumber(string.split(fields.saved,":")[2])]
                 -- print("renamefrom_"..bot_name)
-                local parts = string.split(bot_name,",vbotsep,")
+                local parts = string.split(bot_name,",turtlebotsep,")
                 if #parts == 2 and parts[1] == player:get_player_name() then
                     bot_name = parts[2]
                     -- print("renamefrom_"..bot_name)
 
-                    VBOTS.load(pos,player,"renamefrom_"..bot_name)
+                    TURTLEBOTS.load(pos,player,"renamefrom_"..bot_name)
                 end
 
             end
         elseif #form_parts == 2 and form_parts[1] == "renamefrom" then
             -- print("Renameto formspec received")
-            local bot_data = VBOTS.bot_info[form_parts[2]]
+            local bot_data = TURTLEBOTS.bot_info[form_parts[2]]
             local pos=bot_data.pos
             local pname = player:get_player_name()
             minetest.close_formspec(pname, bot_key)
             local oldname = fields.oldname
             local newname = fields.newname
             if newname and oldname then
-                local hold = data.fields[pname..",vbotsep,"..oldname]
-                data.fields[pname..",vbotsep,"..oldname] = nil
-                data.fields[pname..",vbotsep,"..newname] = hold
+                local hold = data.fields[pname..",turtlebotsep,"..oldname]
+                data.fields[pname..",turtlebotsep,"..oldname] = nil
+                data.fields[pname..",turtlebotsep,"..newname] = hold
                 mod_storage:from_table(data)
-                -- print("renamed "..pname..",vbotsep,"..oldname.." to "..pname..",vbotsep,"..newname)
+                -- print("renamed "..pname..",turtlebotsep,"..oldname.." to "..pname..",turtlebotsep,"..newname)
             end
         end
     end
