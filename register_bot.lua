@@ -159,12 +159,12 @@ local function position_bot(pos,newpos)
             minetest.check_for_falling(newpos)
             return true
         else
-            minetest.sound_play("error",{pos = newpos, gain = 10})
+            minetest.sound_play("ouch",{pos = newpos, gain = 10})
             minetest.check_for_falling(newpos)
             return false
         end
     else
-        minetest.sound_play("system-fault",{pos = newpos, gain = 10})
+        minetest.sound_play("ouch",{pos = newpos, gain = 10})
         return false
     end
 end
@@ -210,25 +210,28 @@ local function move_bot(pos,direction)
     end
     if newpos then
         -- Check if the new position is not occupied by another bot
-        if not string.find(minetest.get_node(newpos).name, TURTLEBOTS.turtlebots_on)
-           and not string.find(minetest.get_node(newpos).name, TURTLEBOTS.turtlebots_off) then
+        if (not string.find(minetest.get_node(newpos).name, TURTLEBOTS.turtlebots_on))
+           and (not string.find(minetest.get_node(newpos).name, TURTLEBOTS.turtlebots_off)) then
             if not minetest.is_protected(newpos, bot_owner) then
                 minetest.set_node(newpos,{name="air"})
+                if (position_bot(pos,newpos)) then
+                    bot_build(newpos,pos)
+                end
+                -- Check if the player is close enough to the bot to be moved along with it
+                if ppos then
+                    if math.abs(ppos.x-pos.x)<1.1 and
+                            math.abs(ppos.z-pos.z)<1.1 and
+                            math.abs(ppos.y-pos.y)<2 and
+                            ppos.y>pos.y then
+                        player:set_pos({x=newpos.x, y=newpos.y+0.5, z=newpos.z })
+                    end
+                end
             end
-        end
-        if (position_bot(pos,newpos)) then
-            bot_build(newpos,pos)
-        end
-    end
-    -- Check if the player is close enough to the bot to be moved along with it
-    if ppos then
-        if math.abs(ppos.x-pos.x)<1.1 and
-                math.abs(ppos.z-pos.z)<1.1 and
-                math.abs(ppos.y-pos.y)<2 and
-                ppos.y>pos.y then
-            player:set_pos({x=newpos.x, y=newpos.y+0.5, z=newpos.z })
+        else
+            minetest.sound_play("ouch",{pos = newpos, gain = 10})
         end
     end
+
 end
 
 -- Function to parse and execute bot commands

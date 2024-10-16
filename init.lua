@@ -5,7 +5,6 @@
 -- Visual Bots v0.3
 -- (c)2019 Nigel Garnett.
 --
--- see licence.txt
 --$
 
 
@@ -19,7 +18,9 @@ TURTLEBOTS.PROGRAM_SIZE = 12
 TURTLEBOTS.turtlebots_on = "turtlebots:on"
 TURTLEBOTS.turtlebots_off = "turtlebots:off"
 
-TURTLEBOTS.debug = true
+-- Set to true to enable debug messages.
+-- This will print debug messages to the console and chat.
+TURTLEBOTS.debug = false
 
 local debug = function(object)
     if TURTLEBOTS.debug == true and object ~= nil then
