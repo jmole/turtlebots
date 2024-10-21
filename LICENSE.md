@@ -1,5 +1,5 @@
-# IMAGE ASSETS, TEXTURES, AND 3D MODELS:
-All image assets, textures, and 3D models in this project are licensed under the Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0).
+# IMAGE ASSETS, TEXTURES, SOUNDS AND 3D MODELS:
+All image assets, textures, and 3D models in this project are Copyright 2024 Jon Moeller, and licensed under the Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0).
 
 You are free to:
 - Share — copy and redistribute the material in any medium or format
