@@ -20,7 +20,7 @@ TURTLEBOTS.turtlebots_off = "turtlebots:off"
 
 -- Set to true to enable debug messages.
 -- This will print debug messages to the console and chat.
-TURTLEBOTS.debug = false
+TURTLEBOTS.debug = true
 
 local debug = function(object)
     if TURTLEBOTS.debug == true and object ~= nil then
@@ -272,6 +272,9 @@ TURTLEBOTS.serialize_program = function(node_metadata)
             debug(tostring(i)..":"..tostring(j)..":"..code)
             programs[i][j] = code
             j = j + 1
+        end
+        if i == 0 then
+            programs[i][j] = "turtlebots:done"
         end
     end
     debug(programs)

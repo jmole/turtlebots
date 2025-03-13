@@ -59,6 +59,7 @@ register_command("run_6","START PROGRAM F","turtlebots_run_6.png")
 register_command("run_7","START PROGRAM G","turtlebots_run_7.png")
 register_command("run_8","START PROGRAM H","turtlebots_run_8.png")
 
+register_command("done","Program finished","turtlebots_done.png")
 
 -------------------------------------
 -- COLORED BLOCKS
