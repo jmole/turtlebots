@@ -18,17 +18,16 @@ local register_command = function(itemname,description,image)
     })
 end
 
-register_command("move_forward","Move bot forward","turtlebots_move_forward.png")
-register_command("move_backward","Move bot backward","turtlebots_move_backward.png")
-register_command("move_up","Move bot up","turtlebots_move_up.png")
-register_command("move_down","Move bot down","turtlebots_move_down.png")
-register_command("move_left","Move bot left","turtlebots_move_left.png")
-register_command("move_right","Move bot right","turtlebots_move_right.png")
+register_command("move_forward","Move Forward","turtlebots_move_forward.png")
+register_command("move_backward","Move Backward","turtlebots_move_backward.png")
+register_command("move_up","Move Up","turtlebots_move_up.png")
+register_command("move_down","Move Down","turtlebots_move_down.png")
+register_command("move_left","Move Left","turtlebots_move_left.png")
+register_command("move_right","Move Right","turtlebots_move_right.png")
 register_command("stand_still","Do Nothing","turtlebots_stand_still.png")
 
-register_command("turn_clockwise","Turn bot 90° clockwise","turtlebots_turn_clockwise.png")
-register_command("turn_anticlockwise","Move bot 90° anti-clockwise","turtlebots_turn_anticlockwise.png")
-register_command("turn_random","Move bot 90° in a random direction","turtlebots_turn_random.png")
+register_command("turn_clockwise","Turn 90° clockwise","turtlebots_turn_clockwise.png")
+register_command("turn_anticlockwise","Turn 90° anti-clockwise","turtlebots_turn_anticlockwise.png")
 
 
 register_command("loadblock_red","Add a red block to your queue", "turtlebots_loadblock_red.png")

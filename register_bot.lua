@@ -1,15 +1,35 @@
 -- Function to display a command particle above the bot
+local function vector_multiply(vec, scalar)
+    return {
+        x = vec.x * scalar,
+        y = vec.y * scalar,
+        z = vec.z * scalar
+    }
+end
+
 local function show_command_sprite(pos, command)
     command = string.gsub(command, ":", "_")
+    local node = minetest.get_node(pos)
+    local dir = minetest.facedir_to_dir(node.param2)
+    local right = {x = -dir.z, y = dir.y, z = dir.x}
+    local left = {x = dir.z, y = dir.y, z = -dir.x}
     local particle = {
         pos = pos,
-        velocity = {x=0.2, y=2, z=0.2},
+        velocity = {x=dir.x/5, y=1, z=dir.z/5},
         drag = 1,
         texture = command..".png",
         vertical = false,
         size = 4,
+        expirationtime = 3,
+        jitter = {x=0.1, y=0.1, z=0.1},
+        glow = 8
     }
-    particle.pos.y = particle.pos.y + 0.5
+    if string.find(command, "loadblock") then
+        particle.pos = particle.pos + vector_multiply(right,0.25)
+    elseif string.find(command, "run_") then
+        particle.size = 8
+        particle.pos = particle.pos + vector_multiply(left,1)
+    end
     minetest.add_particle(particle)
 end
 

@@ -1,14 +1,15 @@
 -------------------------------------
 -- Formspec colored boxes
 -------------------------------------
-local function highlight(item, line, w, h, r, g, b)
+local function highlight(item, line, w, h, r, g, b, a)
+    a = a or "f"
     local padding = 0
     local item = item - padding
     local line = line - padding
     w = w + padding * 2
     h = h + padding * 2
     return "box[" .. item .. "," .. line .. ";" .. w .. "," .. h .. ";#" ..
-        r .. r .. g .. g .. b .. b .. "90]"
+        r .. r .. g .. g .. b .. b .. a .. a .. "]"
 end
 
 local function maketext(x, y, text, tag)
@@ -46,7 +47,7 @@ local function _image_button(x, y, w, h, image, name, tooltip, exit)
         "tooltip[" .. x .. "," .. y .. ";" .. w .. "," .. h .. ";" .. tooltip .. "]"
 end
 
-local function item_image_button_padding(x,y,w,h,padding,name)
+local function item_image_button_padding(x, y, w, h, padding, name)
     x = x + padding
     y = y + padding
     w = w - padding * 2
@@ -60,11 +61,18 @@ end
 local function image_button(x, y, w, h, image, name)
     return _image_button(x, y, w, h, image, name, name, "")
 end
-local function image_button_exit(x, y, w, h, image, name)
-    return _image_button(x, y, w, h, image, name, name, "_exit")
+local function image_button_exit(x, y, w, h, image, name, tooltip)
+    if not tooltip then
+        tooltip = name
+    end
+    return _image_button(x, y, w, h, image, name, tooltip, "_exit")
 end
-local function button_tooltip(x, y, image, tooltip, command)
-    return image_button_tooltip(x, y, 1, 1, image, command, tooltip)
+local function button_tooltip(x, y, image, tooltip, command, exit)
+    if not exit then
+        return image_button_tooltip(x, y, 1, 1, image, command, tooltip)
+    else
+        return image_button_exit(x, y, 1, 1, image, command, tooltip)
+    end
 end
 local function button(x, y, image, name, exit)
     if not exit then
@@ -83,15 +91,10 @@ local function cbutton(x, y, padding, name)
 end
 
 
-local function button_row_space(x, y, padding, nametable )
+local function button_row_space(x, y, padding, nametable)
     local row = ""
     for i, name in pairs(nametable) do
-        if name == blank_space then
-            row = row .. ""
-        else
-            -- Add draggable command item instead of button
-            row = row .. padded_list("detached:command_palette", name, x + i - 1, y, 1, 1)
-        end
+        row = row .. cbutton(x + i - 1, y, padding, name)
     end
     return row
 end
@@ -100,18 +103,18 @@ end
 -- Main panel generators
 -------------------------------------
 local function panel_commands()
-    return highlight(0, 1.5, 7, 9, "f", "f", "f")
+    return highlight(0, 1.5, 7, 9, "f", "f", "f", "7")
     .."container[0.25,0.25]"
-    ..button_row_space(0,1.5,0.01, { "__blank", "move_forward", "__blank"})
-    ..button_row_space(0,2.5,0.01, { "move_left", "stand_still", "move_right"})
-    ..button_row_space(0,3.5,0.01, { "__blank", "move_backward", "__blank"})
-    ..button_row_space(3.5,1.5,0.01, {blank_space, "move_up" })
-    ..button_row_space(3.5,2.5,0.01, {"turn_anticlockwise", "stand_still","turn_clockwise" })
-    ..button_row_space(3.5,3.5,0.01, {blank_space, "move_down", })
-    ..button_row_space(0.225,5.5,0.01,{"loadblock_red", "loadblock_orange", "loadblock_yellow", "loadblock_green", "loadblock_grey", "loadblock_clear"})
-    ..button_row_space(0.225,6.5,0.01,{"loadblock_cyan", "loadblock_blue", "loadblock_pink", "loadblock_white", "loadblock_black","add_1"})
-    ..button_row_space(0.225,7.5,0.01,{"run_1", "run_2", "run_3", "run_4", "add_2", "add_4"})
-    ..button_row_space(0.225,8.5,0.01,{"run_5", "run_6", "run_7", "run_8", "add_8", "add_16"})
+    ..button_row_space(0,1.75,0.01, { "__blank", "move_forward", "__blank"})
+    ..button_row_space(0,2.75,0.01, { "move_left", "stand_still", "move_right"})
+    ..button_row_space(0,3.75,0.01, { "__blank", "move_backward", "__blank"})
+    ..button_row_space(3.5,1.75,0.01, {blank_space, "move_up" })
+    ..button_row_space(3.5,2.75,0.01, {"turn_anticlockwise", "stand_still","turn_clockwise" })
+    ..button_row_space(3.5,3.75,0.01, {blank_space, "move_down", })
+    ..button_row_space(0.225,5.75,0.01,{"loadblock_red", "loadblock_orange", "loadblock_yellow", "loadblock_green", "loadblock_grey", "loadblock_clear"})
+    ..button_row_space(0.225,6.75,0.01,{"loadblock_cyan", "loadblock_blue", "loadblock_pink", "loadblock_white", "loadblock_black","add_1"})
+    ..button_row_space(0.225,7.75,0.01,{"run_1", "run_2", "run_3", "run_4", "add_2", "add_4"})
+    ..button_row_space(0.225,8.75,0.01,{"run_5", "run_6", "run_7", "run_8", "add_8", "add_16"})
     .. "container_end[]"
 end
 
@@ -133,14 +136,24 @@ local function draw_subroutines(pos, program)
     local subroutines = ""
     subroutines = subroutines .. "container[1,0]"
 
-    -- highlight coding area in grey
-    subroutines = subroutines .. highlight(7, 1.5, TURTLEBOTS.PROGRAM_SIZE+1, program, "9", "9", "f")
-    subroutines = subroutines .. highlight(7, 1.5+program+1,TURTLEBOTS.PROGRAM_SIZE+1, 8-program, "9", "9", "f")
-    -- highlight selected program in pink
-    subroutines = subroutines .. highlight(6, 1.5 + program, TURTLEBOTS.PROGRAM_SIZE+2, 1, "f", "f", "f")
+    -- highlight coding area in purple
+    subroutines = subroutines .. highlight(7, 1.5, TURTLEBOTS.PROGRAM_SIZE+1, program, "9", "9", "f", "7")
+    subroutines = subroutines .. highlight(7, 1.5+program+1,TURTLEBOTS.PROGRAM_SIZE+1, 8-program, "9", "9", "f", "7")
+    -- highlight selected program in light grey
+    subroutines = subroutines .. highlight(6, 1.5 + program, TURTLEBOTS.PROGRAM_SIZE+2, 1, "f", "f", "f", "7")
     subroutines = subroutines .. string.format("image[%s,%s;1,1;turtlebots_selected.png]",6, 1.5 + program)
 
-    local prog_names = {"PROGRAM START", "PROGRAM A", "PROGRAM B", "PROGRAM C", "PROGRAM D", "PROGRAM E", "PROGRAM F", "PROGRAM G", "PROGRAM H"}
+    local prog_names = {
+        "Click to modify code in START",
+        "Click to modify code in PROGRAM A",
+        "Click to modify code in PROGRAM B", 
+        "Click to modify code in PROGRAM C",
+        "Click to modify code in PROGRAM D",
+        "Click to modify code in PROGRAM E",
+        "Click to modify code in PROGRAM F",
+        "Click to modify code in PROGRAM G",
+        "Click to modify code in PROGRAM H"
+    }
     for i = 0, 8 do
         -- program list
         subroutines = subroutines
@@ -161,13 +174,13 @@ local function panel_code(pos, program)
     return
         -- run button
         highlight(8, 0, 1, 1, "5", "5", "f")
-        .. button(8, 0, "turtlebots_gui_run.png", "run", true)
+        .. button_tooltip(8, 0, "turtlebots_gui_run.png", "Click to Run code in START", "run", true)
         -- exit button
         .. highlight(8+TURTLEBOTS.PROGRAM_SIZE, 0, 1, 1, "f", "0", "0")
-        .. button(8+TURTLEBOTS.PROGRAM_SIZE, 0, "turtlebots_gui_exit.png", "exit", true)
+        .. button_tooltip(8+TURTLEBOTS.PROGRAM_SIZE, 0, "turtlebots_gui_exit.png", "Close the code editor.", "exit", true)
         -- trash can
         .. highlight(8+TURTLEBOTS.PROGRAM_SIZE/2, 0, 2, 1, "5", "5", "f")
-        .. button(8+TURTLEBOTS.PROGRAM_SIZE/2, 0, "turtlebots_gui_trash.png", "trash")
+        .. button_tooltip(8+TURTLEBOTS.PROGRAM_SIZE/2, 0, "turtlebots_gui_trash.png", "Delete last code block in selected program.", "trash")
         .. padded_list("detached:bot_trash", "main", 9+TURTLEBOTS.PROGRAM_SIZE/2, 0, 1, 1)
         -- subroutines
         .. draw_subroutines(pos, program)
@@ -214,7 +227,8 @@ local function get_formspec_style()
 
     -- Set fully transparent base background
     -- This allows our bgcolor setting to work properly
-    style = style .. "bgcolor[#000000C0]"
+    style = style .. "bgcolor[#00000000]"
+    style = style .. "background9[0,0;1,1;turtlebots_background9.png;true;7]"
     return style
 end
 
@@ -223,6 +237,7 @@ local function get_formspec(pos, meta)
     local bot_pos = pos.x .. "," .. pos.y .. "," .. pos.z
     local fs_panel = meta:get_int("panel")
     local fs_program = meta:get_int("program")
+
     local formspec = "formspec_version[7]"
         .. string.format("size[%s,11]",9.5+TURTLEBOTS.PROGRAM_SIZE)
         .. "bgcolor[#00000080]"

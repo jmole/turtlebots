@@ -60,6 +60,17 @@ minetest.register_on_player_receive_fields(function(player, bot_key, fields)
                     if #nametable>=2 then
                         if nametable[1]=="sub" then
                             meta:set_int("program", nametable[2])
+                            -- print(dump(
+                        end
+                        if nametable[1]=="move" or
+                                nametable[1]=="turn" or
+                                nametable[1]=="add" or
+                                nametable[1]=="number" or
+                                nametable[1]=="mode" or
+                                nametable[1]=="loadblock" or
+                                nametable[1]=="run" then
+                            --print("COMMAND!!!!!!!")
+                            local leftover = inv:add_item("p"..meta:get_int("program"), ItemStack("turtlebots:"..f))
                         end
                     end
                 end

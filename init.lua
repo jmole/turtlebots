@@ -7,6 +7,7 @@
 --
 --$
 
+local mod_storage = minetest.get_mod_storage()
 
 TURTLEBOTS={}
 TURTLEBOTS.prefix = "turtlebots"
@@ -62,44 +63,6 @@ local trashInv = minetest.create_detached_inventory(
                        end
                     })
 trashInv:set_size("main", 1)
-
--- Create command palette inventory
-local commandPalette = minetest.create_detached_inventory(
-    "command_palette",
-    {
-        allow_move = function(inv, from_list, from_index, to_list, to_index, count, player)
-            -- Only allow moving to program inventories
-            if string.match(to_list, "^p%d+$") then
-                return count
-            end
-            return 0
-        end,
-        allow_put = function(inv, listname, index, stack, player)
-            return 0
-        end,
-        allow_take = function(inv, listname, index, stack, player)
-            return 0
-        end
-    }
-)
-
--- Initialize command palette with all available commands
-local commands = {
-    "move_forward", "move_backward", "move_up", "move_down", "move_left", "move_right",
-    "stand_still", "turn_clockwise", "turn_anticlockwise", "turn_random",
-    "loadblock_red", "loadblock_orange", "loadblock_yellow", "loadblock_green",
-    "loadblock_grey", "loadblock_white", "loadblock_black", "loadblock_blue",
-    "loadblock_cyan", "loadblock_pink", "loadblock_clear",
-    "add_1", "add_2", "add_4", "add_8", "add_16",
-    "run_1", "run_2", "run_3", "run_4", "run_5", "run_6", "run_7", "run_8"
-}
-
-for _, cmd in ipairs(commands) do
-    commandPalette:set_size(cmd, 1)
-    commandPalette:set_stack(cmd, 1, ItemStack("turtlebots:" .. cmd))
-end
-
-local mod_storage = minetest.get_mod_storage()
 
 local function bot_namer()
     local first = {
