@@ -21,7 +21,7 @@ TURTLEBOTS.turtlebots_off = "turtlebots:off"
 
 -- Set to true to enable debug messages.
 -- This will print debug messages to the console and chat.
-TURTLEBOTS.debug = true
+TURTLEBOTS.debug = false
 
 local debug = function(object)
     if TURTLEBOTS.debug == true and object ~= nil then
