@@ -240,7 +240,7 @@ local function get_formspec(pos, meta)
 
     local formspec = "formspec_version[7]"
         .. string.format("size[%s,11]",9.5+TURTLEBOTS.PROGRAM_SIZE)
-        .. "bgcolor[#00000080]"
+        .. "no_prepend[]"
         .. get_formspec_style()
         .. "container[0.25,0.25]"
         .. maketext(3, 0.25, bot_name, "big")
