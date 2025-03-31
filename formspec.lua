@@ -86,7 +86,12 @@ end
 local function button_row_space(x, y, padding, nametable )
     local row = ""
     for i, name in pairs(nametable) do
-        row = row .. cbutton(x + i - 1, y, padding, name)
+        if name == blank_space then
+            row = row .. ""
+        else
+            -- Add draggable command item instead of button
+            row = row .. padded_list("detached:command_palette", name, x + i - 1, y, 1, 1)
+        end
     end
     return row
 end
@@ -172,8 +177,47 @@ end
 
 
 -------------------------------------
--- Formspec generator
+-- Formspec style definitions
 -------------------------------------
+local function get_formspec_style()
+    -- Base style string with each element carefully documented
+    local style = ""
+
+    -- Set inventory slot colors
+    -- param1: Slot background color (semi-transparent light gray)
+    -- param2: Slot border color (semi-transparent white)
+    -- param3: Selected slot highlight (very transparent white)
+    -- param4: Text color (black)
+    -- param5: Text highlight color (white)
+    style = style .. "listcolors[#3337;#FFF7;#FFF0;#000;#FFF]"
+
+    -- Style for image buttons
+    -- Removes default border and applies custom background
+    -- bgimg_middle defines the 9-slice scaling points
+    style = style .. "style_type[image_button;border=false;"
+                  .. "bgimg=turtlebots_button9.png;"
+                  .. "bgimg_pressed=turtlebots_button9_pressed.png;"
+                  .. "bgimg_middle=2,2]"
+
+    -- Style for regular buttons (same as image buttons)
+    style = style .. "style_type[button;border=false;"
+                  .. "bgimg=turtlebots_button9.png;"
+                  .. "bgimg_pressed=turtlebots_button9_pressed.png;"
+                  .. "bgimg_middle=2,2]"
+
+    -- Text styling for various elements
+    -- Uses a dark gray that's easy to read on both light and dark backgrounds
+    style = style .. "style_type[field;textcolor=#323232]"
+           .. "style_type[label;textcolor=#323232]"
+           .. "style_type[textarea;textcolor=#323232]"
+           .. "style_type[checkbox;textcolor=#323232]"
+
+    -- Set fully transparent base background
+    -- This allows our bgcolor setting to work properly
+    style = style .. "bgcolor[#000000C0]"
+    return style
+end
+
 local function get_formspec(pos, meta)
     local bot_name = meta:get_string("name")
     local bot_pos = pos.x .. "," .. pos.y .. "," .. pos.z
@@ -181,6 +225,8 @@ local function get_formspec(pos, meta)
     local fs_program = meta:get_int("program")
     local formspec = "formspec_version[7]"
         .. string.format("size[%s,11]",9.5+TURTLEBOTS.PROGRAM_SIZE)
+        .. "bgcolor[#00000080]"
+        .. get_formspec_style()
         .. "container[0.25,0.25]"
         .. maketext(3, 0.25, bot_name, "big")
         .. panel_main(bot_pos, fs_panel)

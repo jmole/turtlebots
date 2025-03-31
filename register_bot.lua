@@ -338,7 +338,7 @@ local function register_bot(node_name,node_desc,node_tiles,node_groups)
         drawtype = "mesh",
         mesh = "turtle.obj",
         description = node_desc,
-        use_texture_alpha = true,
+        use_texture_alpha = "clip",
         tiles = {"turtle_texture.png"},
         stack_max = 1,
         is_ground_content = false,
@@ -388,7 +388,7 @@ local function register_bot(node_name,node_desc,node_tiles,node_groups)
 end
 
 -- Register inactive bot node
-register_bot(TURTLEBOTS.turtlebots_off, "Inactive Vbot", {
+register_bot(TURTLEBOTS.turtlebots_off, "Turtle Bot", {
             "turtlebots_turtle_top.png",
             "turtlebots_turtle_bottom.png",
             "turtlebots_turtle_right.png",
@@ -404,7 +404,7 @@ register_bot(TURTLEBOTS.turtlebots_off, "Inactive Vbot", {
 )
 
 -- Register active bot node
-register_bot(TURTLEBOTS.turtlebots_on, "Live Vbot", {
+register_bot(TURTLEBOTS.turtlebots_on, "Activated Turtle Bot", {
             "turtlebots_turtle_top4.png",
             "turtlebots_turtle_bottom.png",
             "turtlebots_turtle_right.png",
