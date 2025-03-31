@@ -366,6 +366,7 @@ local function register_bot(node_name,node_desc,node_tiles,node_groups)
         legacy_facedir_simple = true,
         groups = node_groups,
         light_source = 14,
+        diggable = true,  -- Prevent default digging behavior
         on_blast = function() end,
         after_place_node = function(pos, placer, itemstack, pointed_thing)
             TURTLEBOTS.bot_init(pos, placer)
@@ -389,11 +390,14 @@ local function register_bot(node_name,node_desc,node_tiles,node_groups)
         on_timer = function(pos, elapsed)
             return bot_handletimer(pos)
         end,
-        can_dig = function(pos,player)
-            local meta = minetest.get_meta(pos)
-            local inv = meta:get_inventory()
-            local i = interact(player,pos)
-            if inv:is_empty("main") and i then
+        can_dig = function(pos, player)
+            -- Only allow digging (destroying turtlebot) if:
+            -- 1. The player is wielding something (not empty hand)
+            -- 2. The player has permission to interact
+            local wielded = player:get_wielded_item()
+            local wielded_name = wielded:get_name()
+            local i = interact(player, pos)
+            if wielded_name ~= "" and i then
                 return true
             end
             return false

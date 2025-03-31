@@ -36,7 +36,11 @@ minetest.register_on_player_receive_fields(function(player, bot_key, fields)
                 TURTLEBOTS.wipe_programs(bot_data.pos)
             end
             if fields.quit=="true" then
+                meta:set_int("program", 0)  -- Reset program to 0 on quit
                 return
+            end
+            if fields.exit then
+                meta:set_int("program", 0)  -- Reset program to 0 on exit
             end
             if fields.commands then
                 meta:set_int("panel", 0)
