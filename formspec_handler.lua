@@ -23,6 +23,13 @@ minetest.register_on_player_receive_fields(function(player, bot_key, fields)
         -- print(bot_key.." vs "..meta_bot_key)
         if bot_key == meta_bot_key then
             bot_key = bot_rekey(bot_key,meta)
+            -- Handle speed dropdown
+            if fields.speed then
+                local speed_idx = tonumber(fields.speed)
+                local new_steptime = TURTLEBOTS.speeds[speed_idx].steptime
+                meta:set_int("speed", speed_idx)
+                meta:set_int("steptime", new_steptime)
+            end
             if fields.run then
                 minetest.after(0, TURTLEBOTS.bot_togglestate, bot_data.pos, "on")
             end

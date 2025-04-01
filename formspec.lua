@@ -202,7 +202,7 @@ local function get_formspec_style()
     -- param3: Selected slot highlight (very transparent white)
     -- param4: Text color (black)
     -- param5: Text highlight color (white)
-    style = style .. "listcolors[#3337;#FFF7;#FFF0;#000;#FFF]"
+    style = style .. "listcolors[#3337;#FFF7;#FFF0;#FFF;#000]"
 
     -- Style for image buttons
     -- Removes default border and applies custom background
@@ -220,10 +220,10 @@ local function get_formspec_style()
 
     -- Text styling for various elements
     -- Uses a dark gray that's easy to read on both light and dark backgrounds
-    style = style .. "style_type[field;textcolor=#323232]"
-           .. "style_type[label;textcolor=#323232]"
-           .. "style_type[textarea;textcolor=#323232]"
-           .. "style_type[checkbox;textcolor=#323232]"
+    style = style .. "style_type[field;textcolor=#CCC]"
+           .. "style_type[label;textcolor=#CCC]"
+           .. "style_type[textarea;textcolor=#CCC]"
+           .. "style_type[checkbox;textcolor=#CCC]"
 
     -- Set fully transparent base background
     -- This allows our bgcolor setting to work properly
@@ -232,11 +232,22 @@ local function get_formspec_style()
     return style
 end
 
+local function speed_dropdown(x,y,speed)
+    local speed_names = {}
+    for i=1, #TURTLEBOTS.speeds do
+        speed_names[i] = TURTLEBOTS.speeds[i].name
+    end
+    return "dropdown[" .. x .. "," .. y .. ";2,0.5;speed;" 
+        .. table.concat(speed_names, ",") .. ";"
+        .. speed .. ";true]"
+end
+
 local function get_formspec(pos, meta)
     local bot_name = meta:get_string("name")
     local bot_pos = pos.x .. "," .. pos.y .. "," .. pos.z
     local fs_panel = meta:get_int("panel")
     local fs_program = meta:get_int("program")
+    local speed = meta:get_int("speed")
 
     local formspec = "formspec_version[7]"
         .. string.format("size[%s,11]",9.5+TURTLEBOTS.PROGRAM_SIZE)
@@ -244,6 +255,7 @@ local function get_formspec(pos, meta)
         .. get_formspec_style()
         .. "container[0.25,0.25]"
         .. maketext(3, 0.25, bot_name, "big")
+        .. speed_dropdown(9.5,0.25,speed)
         .. panel_main(bot_pos, fs_panel)
         .. panel_code(bot_pos, fs_program)
         .. "container_end[]"

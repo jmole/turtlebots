@@ -19,11 +19,18 @@ TURTLEBOTS.PROGRAM_SIZE = 12
 TURTLEBOTS.turtlebots_on = "turtlebots:on"
 TURTLEBOTS.turtlebots_off = "turtlebots:off"
 
+TURTLEBOTS.speeds = {
+    [1] = {name = "Slowest", steptime = 1},
+    [2] = {name = "Slow", steptime = 2},
+    [3] = {name = "Normal", steptime = 3},
+    [4] = {name = "Fast", steptime = 5},
+}
+
 -- Set to true to enable debug messages.
 -- This will print debug messages to the console and chat.
 TURTLEBOTS.debug = false
 
-local debug = function(object)
+_G.DEBUG = function(object)
     if TURTLEBOTS.debug == true and object ~= nil then
         print(tostring(object))
         minetest.chat_send_all(tostring(object))
@@ -134,6 +141,8 @@ TURTLEBOTS.bot_init = function(pos, placer)
     meta:mark_as_private("panel")
     meta:set_int("steptime",1)
     meta:mark_as_private("steptime")
+    meta:set_int("speed",1)
+    meta:mark_as_private("speed")
     meta:set_string("key", bot_key)
     meta:mark_as_private("key")
 	meta:set_string("owner", bot_owner)
@@ -274,7 +283,7 @@ TURTLEBOTS.serialize_program = function(node_metadata)
 
         local j = 0
         for code in stack_out:iterator() do
-            debug(tostring(i)..":"..tostring(j)..":"..code)
+            DEBUG(tostring(i)..":"..tostring(j)..":"..code)
             programs[i][j] = code
             j = j + 1
         end
@@ -282,7 +291,7 @@ TURTLEBOTS.serialize_program = function(node_metadata)
             programs[i][j] = "turtlebots:done"
         end
     end
-    debug(programs)
+    DEBUG(programs)
     return programs
 end
 
@@ -301,15 +310,15 @@ TURTLEBOTS.bot_togglestate = function(pos,mode)
     end
     if mode == "on" then
         newname = TURTLEBOTS.turtlebots_on
-        meta:set_int("steptime", 10)
-        timer:start(1/meta:get_int("steptime"))
+        local interval = 1/meta:get_int("steptime")
+        timer:start(interval)
         meta:set_int("PC",0)
         meta:set_int("PR",0)
         meta:set_string("stack","")
         meta:set_string("home",minetest.serialize(pos))
         local programs = minetest.serialize(TURTLEBOTS.serialize_program(meta))
-        debug("Serialized: ")
-        debug( programs)
+        DEBUG("Serialized: ")
+        DEBUG( programs)
         meta:set_string("programs", programs)
     elseif mode == "off" then
         newname = TURTLEBOTS.turtlebots_off
@@ -318,7 +327,7 @@ TURTLEBOTS.bot_togglestate = function(pos,mode)
         meta:set_int("PR",0)
         meta:set_string("stack","")
     end
-    debug(node.name.." "..newname)
+    DEBUG(node.name.." "..newname)
     if newname then
         minetest.swap_node(pos,{name=newname, param2=node.param2})
     end

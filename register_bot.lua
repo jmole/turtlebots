@@ -169,10 +169,9 @@ local function position_bot(pos,newpos)
         if basically_empty(moveto_node) then
             local node = minetest.get_node(pos)
             local hold = meta:to_table()
-            local elapsed = minetest.get_node_timer(pos):get_elapsed()
             minetest.set_node(pos,{name="air"})
             minetest.set_node(newpos,{name=node.name, param2=node.param2})
-            minetest.get_node_timer(newpos):set(1/R,0)
+            minetest.get_node_timer(newpos):start(1/R)
             if hold then
                 minetest.get_meta(newpos):from_table(hold)
             end
