@@ -67,10 +67,14 @@ trashInv:set_size("main", 1)
 local function bot_namer()
     local first = {
         "Robo", "Cyber", "Mecha", "Gizmo", "Bionic", "Nano", "Astro", "Zippy", "Electro", "Super",
-        "Turbo", "Giga", "Hyper", "Atomic", "Laser", "Jet", "Rocket", "Metal", "Power", "Circuit"
+        "Turbo", "Giga", "Hyper", "Atomic", "Laser", "Jet", "Rocket", "Metal", "Power", "Circuit",
+        "Quantum", "Techno", "Servo", "Pixel", "Digital", "Spark", "Byte", "Data", "Chip",
+        "Matrix", "Proto", "Fusion", "Cyber", "Neural", "Vector", "Omega", "Delta"
     }
     local last = {
-        "Buddy", "Pal", "Friend", "Eater", "Pooper", "Zoomer", "Meower", "Chomper", "Bot", "Breaker"
+        "Buddy", "Pal", "Friend", "Eater", "Zoomer", "Meower", "Chomper", "Bot", "Breaker",
+        "Runner", "Seeker", "Walker", "Hopper", "Dancer", "Miner", "Builder", "Explorer",
+        "Helper", "Worker", "Digger", "Crafter", "Collector", "Maker", "Finder"
     }
     return first[math.random(#first)] .. " " .. last[math.random(#last)]
 end
