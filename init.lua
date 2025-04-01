@@ -26,6 +26,9 @@ TURTLEBOTS.speeds = {
     [4] = {name = "Fast", steptime = 5},
 }
 
+-- Set the node timer interval to 0.1 seconds
+minetest.setting_set("nodetimer_interval", 0.1)
+
 -- Set to true to enable debug messages.
 -- This will print debug messages to the console and chat.
 TURTLEBOTS.debug = false
@@ -76,7 +79,7 @@ local function bot_namer()
         "Robo", "Cyber", "Mecha", "Gizmo", "Bionic", "Nano", "Astro", "Zippy", "Electro", "Super",
         "Turbo", "Giga", "Hyper", "Atomic", "Laser", "Jet", "Rocket", "Metal", "Power", "Circuit",
         "Quantum", "Techno", "Servo", "Pixel", "Digital", "Spark", "Byte", "Data", "Chip",
-        "Matrix", "Proto", "Fusion", "Cyber", "Neural", "Vector", "Omega", "Delta"
+        "Matrix", "Proto", "Fusion", "Cyber", "Neural", "Vector"
     }
     local last = {
         "Buddy", "Pal", "Friend", "Eater", "Zoomer", "Meower", "Chomper", "Bot", "Breaker",
