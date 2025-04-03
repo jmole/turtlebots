@@ -1,5 +1,5 @@
-# IMAGE ASSETS, TEXTURES, SOUNDS AND 3D MODELS:
-All image assets, textures, and 3D models in this project are Copyright 2024 Jon Moeller, and licensed under the Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0).
+### IMAGE ASSETS, TEXTURES, SOUNDS AND 3D MODELS:
+All image assets, textures, and 3D models in this project are © 2024-2025 Jon Moeller, and licensed under the Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0), unless otherwise specified.
 
 You are free to:
 - Share — copy and redistribute the material in any medium or format
@@ -11,11 +11,17 @@ Under the following terms:
 
 For more information, visit: https://creativecommons.org/licenses/by-sa/4.0/
 
+### VIDEOS AND THUMBNAILS
 
-# SOURCE CODE AND TEXT FILES
+Any videos or video thumbnails incorporated into or linked from within this repository are © 2025 Jon Moeller and licenced under the Attribution-NonCommercial-NoDerivatives 4.0 International license (CC BY-NC-ND 4.0).
 
-- Copyright 2019 Nigel Garnett
-- Copyright 2024 Jon Moeller
+For more information, visit: https://creativecommons.org/licenses/by-nc-nd/4.0/
+
+
+### SOURCE CODE AND TEXT FILES
+
+- © 2019 Nigel Garnett
+- © 2024-2025 Jon Moeller
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
