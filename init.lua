@@ -24,10 +24,11 @@ TURTLEBOTS.speeds = {
     [2] = {name = "Slow", steptime = 2},
     [3] = {name = "Normal", steptime = 3},
     [4] = {name = "Fast", steptime = 5},
+    [5] = {name = "Fastest", steptime = 10},
 }
 
 -- Set the node timer interval to 0.1 seconds
-minetest.setting_set("nodetimer_interval", 0.1)
+minetest.setting_set("nodetimer_interval", 0.02)
 
 -- Set to true to enable debug messages.
 -- This will print debug messages to the console and chat.
@@ -144,7 +145,7 @@ TURTLEBOTS.bot_init = function(pos, placer)
     meta:mark_as_private("panel")
     meta:set_int("steptime",1)
     meta:mark_as_private("steptime")
-    meta:set_int("speed",1)
+    meta:set_int("speed",3)
     meta:mark_as_private("speed")
     meta:set_string("key", bot_key)
     meta:mark_as_private("key")
