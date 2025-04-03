@@ -72,33 +72,25 @@ For example, the following program will do the following:
 7) Call program `A`, moving the turtlebot forward 3 steps (1 +2)
 8) Turn right 90 degrees.
 
-![Turtlebots example program](examples/simple-program.png)
+<img src="examples/simple-program.png" alt="Simple Turtlebots Program" width="720px" />
 
 
 ### More Sample Programs
 
-![American Flag](examples/american-flag.png)
+<img src="examples/american-flag.png" alt="American Flag" width="560px" />
 
-![Valentine's Heart](examples/valentines-heart.png)
+<img src="examples/valentines-heart.png" alt="Valentine's Heart" width="560px" />
 
-![Rainbow Tunnel](examples/rainbow-tunnel.png)
+<img src="examples/rainbow-tunnel.png" alt="Rainbow Tunnel" width="560px" />
 
-![Rainbow Elevator](examples/rainbow-elevator.png)
+<img src="examples/rainbow-elevator.png" alt="Rainbow Elevator" width="560px" />
 
-![Candy Cane](examples/candy-cane.png)
+<img src="examples/candy-cane.png" alt="Candy Cane" width="560px" />
 
-![Traffic Light](examples/traffic-light.png)
+<img src="examples/traffic-light.png" alt="Traffic Light" width="560px" />
 
-![Modern Tower](examples/modern-tower.png)
+<img src="examples/modern-tower.png" alt="Modern Tower" width="560px" />
 
-![Smile Flower](examples/smile-flower.png)
+<img src="examples/smile-flower.png" alt="Smile Flower" width="560px" />
 
-![Down the Stairs](examples/down-the-stairs.png)
-
-
-
-
-
-
-
-
+<img src="examples/down-the-stairs.png" alt="Down the Stairs" width="560px" />
