@@ -1,130 +1,104 @@
-# visual-bots
-## A minetest programmable bot 
-### (c) 2019 Nigel Garnett
-Vbots are single block "turtle" style bots, programmable in an entirely visual way.
-They came into existence to amuse my 5 year old daughters, and teach them the basics
-of computer programming, without too much writing.
+# turtlebots
 
-## Basics
-Punch an idle turtlebot with an empty hand to make it run it's program (or click the run icon in the menu [see below]).
+Turtlebots are programmable bots that can be used to build and dig in Luanti (formerly known as minetest)
 
-Punch a running turtlebot with an empty hand to stop the program.
+## Video Overview
 
-Right click (double tap on android) to open the menu (see below).
+This video provides a quick overview of turtlebots:
 
-Dig the bot by hitting it with anything except an empty hand, but bear in mind the bot can only be 
-dug out if it's inventory is empty.
-
-## The Main menu
-
-![Main Menu 1](/images/doc_menu1.png)
-
-The icons ![commands](/textures/turtlebots_gui_commands.png) and ![inventory](/textures/turtlebots_location_inventory.png) are used to switch between the 2 panels shown here.
-
-The panel above contains the commands for the bot, which can be added to the current sub-program (the red area on the right) simply by clicking on them.
-
-The panel below shows the inventory panel, with the bot's inventory above, and the players inventory below.
-This panel is used to add things to the bot's inventory (so it can build with them) or to remove things from the bot's inventory after it has been digging.
+<a href ="https://www.youtube.com/watch?v=UR30MB3449k">
+  <img src="https://github.com/jmole/turtlebots/blob/af6e212b6d99e8de45709ac0d6132df8fb09d963/images/turtlebots-youtube-thumbnail.jpg" alt="Turtlebots on Youtube" width="540px" />
+</a>
 
 
-![Main Menu 2](/images/doc_menu2.png)
+## Getting Started
 
-The trash ![Trash](/textures/turtlebots_gui_trash.png) icon, when pressed, deletes the last instruction on the current sub-program page. Next to this icon is another 1x1 inventory slot which works as a trash can, anything dropped into it is destroyed.
+If you want to play turtlebots **without the distractions of other luanti/minetest mods** – a common request for classroom use, there is a standalone game for Luanti that you can download and install here: [Turtlebots Classroom](https://github.com/jmole/turtlebots-classroom)
 
-The run ![run](/textures/turtlebots_gui_run.png) icon, works like punching the bot with an open hand, It starts the program runnng.
+### Installing Luanti (formerly known as minetest)
 
-The save ![save](/textures/turtlebots_gui_save.png) icon saves the current program & sub-programs under the name of the bot.
+Windows/macOS/Linux/Android users can all find detailed instructions for either installing or compiling Luanti from [the official website](https://www.luanti.org/downloads/).
 
-the load ![load](/textures/turtlebots_gui_load.png) icon allows you to choose and load a program into the bot. Also on this menu are icons which allow the deleting & renaming of programs. 
+### Installing the Turtlebots Mod
 
-The reset ![reset](/textures/turtlebots_gui_nuke.png) icon clears the main program, and all subprograms, but NOT the bot's inventory.
-
-The sub-program panel (the red one on the right) has 7 pages.
-The ![Lion](/textures/turtlebots_program_0.png) icon is the page for the 'Main' program, execution starts here when the bot is activated.
-The other 6 pages are sub-programs which can be called via the 6 'run sub program' icons at the bottom of the command panel.
-![dinosaur](/textures/turtlebots_run_1.png)
-![goat](/textures/turtlebots_run_2.png)
-![horse](/textures/turtlebots_run_3.png)
-![parrot](/textures/turtlebots_run_4.png)
-![bear](/textures/turtlebots_run_5.png)
-![rhino](/textures/turtlebots_run_6.png)
-
-### Movement
-![forward](/textures/turtlebots_move_forward.png)
-![backward](/textures/turtlebots_move_backward.png)
-![up](/textures/turtlebots_move_up.png)
-![down](/textures/turtlebots_move_down.png)
-Move the bot forward, backward, up or down. Movement will fail if the new position is not empty.
-
-![home](/textures/turtlebots_move_home.png)
-Move the bot back to the position where the bot was placed. Note: the facing of the bot is NOT restored to it's initial facing direction.
-
-![clockwise](/textures/turtlebots_turn_clockwise.png)
-![anticlockwise](/textures/turtlebots_turn_anticlockwise.png)
-![random](/textures/turtlebots_turn_random.png)
-These commands turn the bot clockwise, anticlockwise or in a random direction.
-
-### Actions
-
-![dig up](/textures/turtlebots_mode_dig_up.png)
-![dig down](/textures/turtlebots_mode_dig_down.png)
-![dig](/textures/turtlebots_mode_dig.png)
-These commands make the bot dig the node in that direction, and then move into the place it dug from. Note: digging will fail if the node being dug has protection which the owner of the bot could not dig.
-
-![build up](/textures/turtlebots_mode_build_up.png)
-![build down](/textures/turtlebots_mode_build_down.png)
-![build](/textures/turtlebots_mode_build.png)
-These commands make the bot place a block in the noted position (if protection allows and the position is empty).
-The node placed by the bot is the first thing found in the bot's inventory, starting from the first slot.
-
-### Special
-
-![speed](/textures/turtlebots_mode_speed.png)
-This pseudo command chooses the speed that the bot runs the program. when followed by a number multiplier it will make the bot run that many times faster. When NOT followed by a number, it resets the bot to normal speed.
-
-### Multipliers
-
-![x2](/textures/turtlebots_number_2.png)
-![x3](/textures/turtlebots_number_3.png)
-![x4](/textures/turtlebots_number_4.png)
-![x5](/textures/turtlebots_number_5.png)
-![x6](/textures/turtlebots_number_6.png)
-![x7](/textures/turtlebots_number_7.png)
-![x8](/textures/turtlebots_number_8.png)
-![x9](/textures/turtlebots_number_9.png)
-The Multipliers work the same for all commands except speed (explained above). For all other commands (including call sub-program commands) they make that command run multiple times.
-
-## Example1
-
-![forward](/textures/turtlebots_move_forward.png)
-![x4](/textures/turtlebots_number_4.png)
-![clockwise](/textures/turtlebots_turn_clockwise.png)
-![x2](/textures/turtlebots_number_2.png)
-![forward](/textures/turtlebots_move_forward.png)
-![x4](/textures/turtlebots_number_4.png)
-![clockwise](/textures/turtlebots_turn_clockwise.png)
-![x2](/textures/turtlebots_number_2.png)
-
-This program makes the bot move 4 spaces forward (if possible) then turn 180 degrees, move 4 spaces forward (ie back to the start position) and then turn 180 degrees again to face the initial direction.
-
-## Example2 
-### (just example1 using a sub-program)
-
-In the dinosaur ![dinosaur](/textures/turtlebots_program_1.png) sub program put the following:
-![forward](/textures/turtlebots_move_forward.png)
-![x4](/textures/turtlebots_number_4.png)
-![clockwise](/textures/turtlebots_turn_clockwise.png)
-![x2](/textures/turtlebots_number_2.png)
+The easiest way to get up and running is:
+1) Open Luanti
+2) Click on the "Content" tab.
+3) Click "Browse Online Content"
+4) Search for "turtlebots"
+5) Click the turtlebots mod in the search results
+6) Click "Install"
 
 
-Then, in the main ![lion](/textures/turtlebots_program_0.png) program ( the lion), just call it twice like this:
-![dinosaur](/textures/turtlebots_run_1.png)
-![x2](/textures/turtlebots_number_2.png)
+<details>
+<summary>Installing the Turtlebots Mod from Source</summary>
+Otherwise, you can install the mod manually by downloading or cloning the repository into your Luanti/minetest `mods` folder.
+
+On windows, this is typically `%appdata%\.minetest\mods`. On Linux, this is typically `~/.minetest/mods`. On macOS, this is typically `~/Library/Application Support/minetest/mods`. Note that these folders won't exist until you have run Luanti at least once.
+
+```bash
+cd ~/Library/Application\ Support/minetest/mods
+git clone https://github.com/jmole/turtlebots.git
+```
+
+<details>
+
+## How to Play Turtlebots
+
+The turtlebots mod adds a new block called `turtlebots:off` to the game. You can find it in your creative inventory.
+
+If you are using the [turtlebots-classroom game](https://github.com/jmole/turtlebots-classroom), it will automatically be in your hand when you start the game.
+
+You can place a turtlebot on the ground by right clicking a node when you're holding it.
+
+After it's been placed, right clicking the turtlebot will open the turtlebot code window GUI.
+
+### How to Program a Turtlebot
+
+The turtlebot code window GUI has a command palette on the left side, and a code block editor on the right.
+
+To add commands to a program, simply click on the name of the program you want to modify, and click on the commands in the command palette.
+
+Each row in the code block editor is a separate program. When **START** is pressed, the turtlebot will execute the program in the first row (the start program).
+
+For example, the following program will do the following:
+
+1) Call program `A`, moving the turtlebot forward 3 steps (1 +2)
+2) Turn right 90 degrees.
+3) Call program `A`, moving the turtlebot forward 3 steps (1 +2)
+4) Turn right 90 degrees.
+5) Call program `A`, moving the turtlebot forward 3 steps (1 +2)
+6) Turn right 90 degrees.
+7) Call program `A`, moving the turtlebot forward 3 steps (1 +2)
+8) Turn right 90 degrees.
+
+![Turtlebots example program](examples/simple-program.png)
+
+
+### More Sample Programs
+
+![American Flag](examples/american-flag.png)
+
+![Valentine's Heart](examples/valentines-heart.png)
+
+![Rainbow Tunnel](examples/rainbow-tunnel.png)
+
+![Rainbow Elevator](examples/rainbow-elevator.png)
+
+![Candy Cane](examples/candy-cane.png)
+
+![Traffic Light](examples/traffic-light.png)
+
+![Modern Tower](examples/modern-tower.png)
+
+![Smile Flower](examples/smile-flower.png)
+
+![Down the Stairs](examples/down-the-stairs.png)
 
 
 
 
 
 
-Have fun.
-  Nigel
+
+
