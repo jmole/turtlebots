@@ -41,7 +41,7 @@ cd ~/Library/Application\ Support/minetest/mods
 git clone https://github.com/jmole/turtlebots.git
 ```
 
-<details>
+</details>
 
 ## How to Play Turtlebots
 
